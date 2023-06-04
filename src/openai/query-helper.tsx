@@ -1,13 +1,11 @@
-import {Configuration, OpenAIApi} from "openai";
 import React, {useEffect, useState} from "react";
+import {OpenaiSynonymsRequest, OpenaiSynonymsResponse} from "./types";
+import {queryToSynonymsString} from "./utils";
+import OpenaiRepository from "./openaiRepository";
+const QueryHelper = ({query}: OpenaiSynonymsRequest) => {
+    const [result, setResult] = useState<OpenaiSynonymsResponse | null>(null);
 
-const configuration = new Configuration({
-    organization: process.env.REACT_APP_OPENAI_ORGANIZATION,
-    apiKey: process.env.REACT_APP_OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
-const QueryHelper = () => {
-    const [result, setResult] = useState(null);
+    const queryToString = queryToSynonymsString(query);
 
     useEffect(() => {
         const getSynonyms = async () => {
@@ -15,45 +13,9 @@ const QueryHelper = () => {
                 return;
             }
 
-            const data = await openai.createChatCompletion({
-                model: "gpt-3.5-turbo",
-                messages: [
-                    {
-                        role: "system",
-                        content: "You are a helpful assistant to find similar words."
-                    },
-                    {
-                        role: "user",
-                        content: "Give maximum 5 English words for each words.\n" +
-                            "QUESTION: [\"MOSFET\", \"BJT\", \"saturation\", \"blackhole\"]\n" +
-                            "\n" +
-                            "response:\n" +
-                            "{\n" +
-                            "    \"list\": [\n" +
-                            "        [\"```{synonym of first word}```\", \"```{synonym of first word}```\", \"```{synonym of first word}```\"],\n" +
-                            "        [\"```{synonym of second word}```\"],\n" +
-                            "        [\"```{synonym of third word}```\", \"```{synonym of third word}```\"],\n" +
-                            "        ...\n" +
-                            "    ]\n" +
-                            "}"
-                    }
-                ],
-                temperature: 0.2
-            });
-
-            const response = data.data;
-
-            // Parse response and format as desired
-            if (response.choices[0].message) {
-                let synonyms = JSON.parse(response.choices[0].message.content);
-                const lines = response.choices[0].message.content.split('\n');
-                lines.forEach(line => {
-                    const parts = line.split(':');
-                    if (parts.length === 2) {
-                        synonyms[parts[0].trim()] = parts[1].split(',').map(word => word.trim());
-                    }
-                });
-
+            const data = await OpenaiRepository.getSynonyms(queryToString);
+            if (data.data.choices[0].message) {
+                let synonyms: OpenaiSynonymsResponse = JSON.parse(data.data.choices[0].message.content);
                 setResult(synonyms);
             }
         };
@@ -63,9 +25,20 @@ const QueryHelper = () => {
 
     return (
         <div className="App">
-            {result && Object.keys(result).map(key =>
-                <div key={key}>
-                    <strong>{key}:</strong> {result[key].join(', ')}
+            <div>
+                <strong>QUERY: </strong>
+                <br />
+                {query.map((keywords, id) =>
+                    <div>
+                        <strong>{id}. </strong>{`[${keywords.join(', ')}]`}<br/>
+                    </div>
+                )}
+            </div>
+            <br/><br/>
+            <strong>RESPONSE: </strong>
+            {result && result.list.map(synonym =>
+                <div>
+                    <strong>{synonym.id}:</strong> {synonym.synonyms.join(', ')}
                 </div>
             )}
         </div>
