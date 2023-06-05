@@ -65,7 +65,7 @@ const QueryHelper = () => {
         <div className="App">
             {result && Object.keys(result).map(key =>
                 <div key={key}>
-                    <strong>{key}:</strong> {result[key].join(', ')}
+                    {/* <strong>{key}:</strong> {result[key].join(', ')} */}
                 </div>
             )}
         </div>
