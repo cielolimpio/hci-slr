@@ -25,6 +25,11 @@ const QueryHelper = ({query}: OpenaiSynonymsRequest) => {
 
     return (
         <div className="App">
+<<<<<<< HEAD
+            {result && Object.keys(result).map(key =>
+                <div key={key}>
+                    {/* <strong>{key}:</strong> {result[key].join(', ')} */}
+=======
             <div>
                 <strong>QUERY: </strong>
                 <br />
@@ -39,6 +44,7 @@ const QueryHelper = ({query}: OpenaiSynonymsRequest) => {
             {result && result.list.map(synonym =>
                 <div>
                     <strong>{synonym.id}:</strong> {synonym.synonyms.join(', ')}
+>>>>>>> ea8f64ac97aca883e2f8f02915fe298990127d30
                 </div>
             )}
         </div>
