@@ -2,7 +2,7 @@ import axios from 'axios';
 import {runSearchParams, ScopusSrcType} from './searchParams';
 import {Paper, ScopusResponse} from "./models";
 
-const API_KEY = 'a8a5ce0821f822484cb1a91c87e015ee';
+const API_KEY = process.env.REACT_APP_SCOPUS_API_KEY;
 const API_URL = 'https://api.elsevier.com/content/search/scopus';
 const MAX_COUNT = 25;
 
@@ -65,4 +65,5 @@ const exampleSearchParams: runSearchParams = {
 };
 
 runSearch(exampleSearchParams);
+
 
