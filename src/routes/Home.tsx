@@ -3,6 +3,7 @@ import addIcon from '../icons/add.svg';
 import deleteIcon from '../icons/delete.svg';
 import { useRef, useState, useEffect } from 'react';
 import Select, { SingleValue } from 'react-select';
+import { ValueType } from 'tailwindcss/types/config';
 import runSearch from '../scopus/run-search';
 import { ScopusSrcType } from '../scopus/searchParams';
 

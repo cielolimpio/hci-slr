@@ -7,7 +7,7 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 const OpenaiRepository =  {
-    getOrKeywords: (query: string) => {
+    getSynonyms: (query: string) => {
         return openai.createChatCompletion({
             model: "gpt-3.5-turbo",
             messages: [
@@ -17,7 +17,7 @@ const OpenaiRepository =  {
                 },
                 {
                     role: "user",
-                    content: "I want to expand my search by adding a synonym using the OR operator for just one group to my query. \bRecommend me maximum three different synonyms for each suggested groups. Tell me the reason why you recommend this keyword in detail, and id of the original suggested group in query for each synonyms, too. The output should be the JSON format. \n" +
+                    content: "I want to expand my search by adding a synonym using the OR operator for just one group to my query. \bRecommend me two different synonyms for each suggested groups. Tell me the reason and id of the original suggested group in query for each synonyms, too. The output should be the JSON format. \n" +
                         "EXAMPLE:\n" +
                         "input:\n" +
                         "{\"id\": 0, \"group\": [\"CI/CD\", \"CICD\"]},\n" +
@@ -25,41 +25,10 @@ const OpenaiRepository =  {
                         "{\"id\": 2, \"group\": [\"Docker\"]}\n" +
                         "output:\n" +
                         "{\n" +
-                        "\"list\": [ {\"id\": 0, \"synonyms\": [{\"word\": \"CI CD\", \"why\": \"reason\"}, {\"word\": \"Continuous Integration\", \"why\": \"reason\"}, {\"word\": \"Continuous Delivery\", \"why\": \"reason\"}]}, {\"id\": 1, \"synonyms\": [{\"word\": \"back-end\", \"why\": \"reason\"},  { \"word\": \"backside\", \"why\": \"reason\"}, {\"word\": \"server\", \"why\": \"reason\"}]}, {\"id\": 2, \"synonyms\": [{\"word\": \"Kubernetes\", \"why\": \"reason\"} , {\"word\": \"container\", \"why\": \"reason\"}]} ]\n" +
+                        "\"list\": [ {\"id\": 0, \"synonyms\": [\"Continuous Integration\", \"Continuous Delivery\"], \"why\": \"reason\"}, {\"id\": 1, \"synonyms\": [\"back-end\", \"backside\"], \"why\": \"reason\"}, {\"id\": 2, \"synonyms\": [\"Kubernetes\", \"container\"], \"why\": \"reason\"} ]\n" +
                         "}\n" +
                         "\n" +
                         "SUGGESTED GROUPS:\n" +
-                        query +
-                        "\n" +
-                        "Tell me only output for suggested groups except your descriptions."
-                }
-            ],
-            temperature: 0.2
-        });
-    },
-
-    getAndKeywords: (query: string) => {
-        return openai.createChatCompletion({
-            model: "gpt-3.5-turbo",
-            messages: [
-                {
-                    role: "system",
-                    content: "You are a helpful assistant to find additional keywords to use for AND query."
-                },
-                {
-                    role: "user",
-                    content: "I am a researcher who is doing SLR through the Scopus search engine. Please recommend maximum 5 different words in the direction of adding keywords to AND query used in suggested query. Please explain why you did so about the keywords you recommended at this time. The response should be only JSON format.\n" +
-                        "\n" +
-                        "EXAMPLE:\n" +
-                        "input:\n" +
-                        "{\"id\": 0, \"group\": [\"CI/CD\", \"CICD\"]},\n" +
-                        "{\"id\": 1, \"group\": [\"backend\"]},\n" +
-                        "output:\n" +
-                        "{\n" +
-                        "\"list\": [ { “word”: “Docker”, “why”: “your reason” }, {”word”: “Kubernetes”, “why”: “your reason”}, …]\n" +
-                        "}\n" +
-                        "\n" +
-                        "Suggested Query: \n" +
                         query +
                         "\n" +
                         "Tell me only output for suggested groups except your descriptions."

@@ -1,16 +1,12 @@
-export interface OpenaiOrKeywordsResponse {
-    list: OrKeyword[]
+export interface OpenaiSynonymsRequest {
+    query: string[][]
 }
-interface OrKeyword {
+
+export interface OpenaiSynonymsResponse {
+    list: Synonym[]
+}
+
+interface Synonym {
     id: number,
-    synonyms: WordAndWhy[]
-}
-
-export interface OpenaiAndKeywordsResponse {
-    list: WordAndWhy[]
-}
-
-interface WordAndWhy {
-    word: string,
-    why: string
+    synonyms: string[]
 }
