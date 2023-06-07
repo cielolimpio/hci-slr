@@ -11,15 +11,15 @@ export default async function runSearch({ query, excludeKeywords, fromYear, toYe
                                         count= 25 //한번에 보이는 검색 결과 개수
 ) {
   const keywordQuery = query.map(innerArray => `(${innerArray.join(' OR ')})`).join(' AND ');
-  const excludeQuery = excludeKeywords.map(keyword => `"${keyword}"`).join(' AND NOT ');
-  const sourceQuery = source ? `AND (SRCTYPE(${source}))` : '';
-  const dateQuery = `${fromYear ? `AND PUBYEAR > ${fromYear} ` : ''}${toYear ? `AND PUBYEAR < ${toYear}` : ''}`;
+  const excludeQuery = excludeKeywords.map(keyword => ` AND NOT ${keyword}`);
+  const sourceQuery = source ? ` AND (SRCTYPE(${source}))` : '';
+  const dateQuery = `${fromYear ? ` AND PUBYEAR > ${fromYear} ` : ''}${toYear ? `AND PUBYEAR < ${toYear}` : ''}`;
 
   count = count > MAX_COUNT ? MAX_COUNT : count;
 
   const queryParams = {
       apiKey: API_KEY,
-      query: `TITLE-ABS-KEY(${keywordQuery} AND NOT ${excludeQuery}) ${sourceQuery} ${dateQuery}`,
+      query: `TITLE-ABS-KEY(${keywordQuery}${excludeQuery})${sourceQuery}${dateQuery}`,
       start,
       count
   };
@@ -30,18 +30,20 @@ export default async function runSearch({ query, excludeKeywords, fromYear, toYe
       });
 
       //검색 총 개수
-      const resultCount = response.data['search-results']['opensearch:totalResults'];
-      console.log(`RESULT COUNT ${resultCount}`);
+      const resultCount = response.data.searchResults?.openSearchTotalResults;
+      console.log(`RESULT COUNT: ${resultCount}`);
+
+      console.log(response.data.searchResults?.openSearchQuery);
 
       //검색 결과
-      const papers: Paper[] = response.data['search-results'].entry
-          .map((document) => ({
-              title: document['dc:title'],
-              doi: document['prism:doi'],
-              authorName: document['dc:creator'],
-              source: document['prism:publicationName'],
-              publicationYear: document['prism:coverDate'].substring(0, 4)
-          }));
+      // @ts-ignore
+      const papers: Paper[] = response.data.searchResults.entry.map((entry) => ({
+          title: entry.dcTitle,
+          doi: entry.prismDoi,
+          authorName: entry.dcCreator,
+          source: entry.prismPublicationName,
+          publicationYear: entry.prismCoverDate?.getFullYear(),
+      }));
 
       console.log(papers);
 
