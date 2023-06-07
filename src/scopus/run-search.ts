@@ -10,12 +10,6 @@ export default async function runSearch({ query, excludeKeywords, fromYear, toYe
                                         start= 0, //검색 결과 페이지 시작
                                         count= 25 //한번에 보이는 검색 결과 개수
 ) {
-  console.log(query);
-  console.log(excludeKeywords);
-  console.log(fromYear);
-  console.log(toYear);
-  console.log(source);
-
   const keywordQuery = query.map(innerArray => `(${innerArray.join(' OR ')})`).join(' AND ');
   const excludeQuery = excludeKeywords.map(keyword => `"${keyword}"`).join(' AND NOT ');
   const sourceQuery = source ? `AND (SRCTYPE(${source}))` : '';
@@ -36,16 +30,16 @@ export default async function runSearch({ query, excludeKeywords, fromYear, toYe
       });
 
       //검색 총 개수
-      console.log(response)
       const resultCount = response.data['search-results']['opensearch:totalResults'];
       console.log(`RESULT COUNT: ${resultCount}`);
+      console.log(response.data['search-results']['opensearch:Query']);
 
       //검색 결과
       const papers: Paper[] = response.data['search-results'].entry.map((entry) => ({
           title: entry['dc:title'],
           doi: entry['prism:doi'],
           authorName: entry['dc:creator'],
-          source: entry['prism:aggregationType'],
+          source: entry['prism:publicationName'],
           publicationYear: entry['prism:coverDate'].substring(0, 4),
       }));
 
@@ -61,7 +55,7 @@ const exampleSearchParams: runSearchParams = {
     excludeKeywords: ['algorithm', 'machine learning'],
     fromYear: '2015',
     toYear: '2020',
-    source: ScopusSrcType.Trade_Journal
+    source: ScopusSrcType.Journal
 };
 
 runSearch(exampleSearchParams);

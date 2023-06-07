@@ -1,5 +1,3 @@
-import {ScopusSrcType} from "./searchParams";
-
 export interface Paper {
     title: string,
     doi: string;
@@ -15,8 +13,7 @@ export interface ScopusResponse {
             'prism:doi': string;
             'prism:coverDate': string;
             'dc:creator': string;
-            'prism:aggregationType': string;
-            'prism: subtype': string;
+            'prism:publicationName': string;
         }[];
     };
 }
