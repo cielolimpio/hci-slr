@@ -7,8 +7,9 @@ export interface Paper {
 }
 
 export interface ScopusResponse {
-    searchResults: {
-        documents: {
+    'search-results': {
+        'opensearch:totalResults': string;
+        entry: {
             'dc:title': string;
             'prism:doi': string;
             'prism:coverDate': string;
