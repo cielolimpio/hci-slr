@@ -2,7 +2,7 @@ import axios from 'axios';
 import {runSearchParams, ScopusSrcType} from './searchParams';
 import {Paper, ScopusResponse} from "./models";
 
-const API_KEY = '';
+const API_KEY = process.env.REACT_APP_SCOPUS_API_KEY;
 const API_URL = 'https://api.elsevier.com/content/search/scopus';
 const MAX_COUNT = 25;
 
@@ -29,7 +29,6 @@ export default async function runSearch({ query, excludeKeywords, fromYear, toYe
           params: queryParams,
       });
 
-
       //검색 총 개수
       const resultCount = response.data['search-results']['opensearch:totalResults'];
       console.log(`RESULT COUNT ${resultCount}`);
@@ -37,12 +36,12 @@ export default async function runSearch({ query, excludeKeywords, fromYear, toYe
       //검색 결과
       const papers: Paper[] = response.data['search-results'].entry
           .map((document) => ({
-          title: document['dc:title'],
-          doi: document['prism:doi'],
-          authorName: document['dc:creator'],
-          source: document['prism:publicationName'],
-          publicationYear: document['prism:coverDate'].substring(0, 4),
-      }));
+              title: document['dc:title'],
+              doi: document['prism:doi'],
+              authorName: document['dc:creator'],
+              source: document['prism:publicationName'],
+              publicationYear: document['prism:coverDate'].substring(0, 4)
+          }));
 
       console.log(papers);
 

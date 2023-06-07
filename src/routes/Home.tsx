@@ -5,11 +5,12 @@ import { useRef, useState, useEffect } from 'react';
 import Select, { SingleValue } from 'react-select';
 import { ValueType } from 'tailwindcss/types/config';
 import runSearch from '../scopus/run-search';
+import { ScopusSrcType } from '../scopus/searchParams';
 
 const years: string[] = Array.from({ length: 64 }, (_, i) => i === 63 ? "Before 1960" : (2023 - i).toString());
 const yearOptions = years.map(year => ({ value: year, label: year }));
 
-const sources = ['전체', '이거', '저거', '그것'];
+const sources = Object.values(ScopusSrcType);
 const sourceOptions = sources.map(source => ({ value: source, label: source }));
 
 export default function Home() {
@@ -18,7 +19,7 @@ export default function Home() {
   const [excludeKeywords, setExcludeKeywords] = useState<string[]>([]);
   const [fromYear, setFromYear] = useState<undefined | string>();
   const [toYear, setToYear] = useState<undefined | string>();
-  const [source, setSource] = useState<undefined | string>();
+  const [source, setSource] = useState<undefined | ScopusSrcType>();
 
   const handleRunSearch = () => {
     runSearch({ query, excludeKeywords, fromYear, toYear, source });
@@ -278,10 +279,10 @@ function ExcludeSection({ excludeKeywords, setExcludeKeywords }: ExcludeSectionP
 interface FilterSectionProps {
   fromYear: undefined | string;
   toYear: undefined | string;
-  source: undefined | string;
+  source: undefined | ScopusSrcType;
   setFromYear: React.Dispatch<React.SetStateAction<undefined | string>>;
   setToYear: React.Dispatch<React.SetStateAction<undefined | string>>;
-  setSource: React.Dispatch<React.SetStateAction<undefined | string>>;
+  setSource: React.Dispatch<React.SetStateAction<undefined | ScopusSrcType>>;
 }
 
 interface OptionType {
