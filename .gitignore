@@ -13,4 +13,5 @@ yarn-error.log*
 /.changelog
 .npm/
 *.idea
+.env
 src/scopus/.env
