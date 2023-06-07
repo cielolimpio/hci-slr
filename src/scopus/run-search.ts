@@ -30,11 +30,15 @@ export default async function runSearch({ query, excludeKeywords, fromYear, toYe
       });
 
       //검색 총 개수
+      // @ts-ignore
       const resultCount = response.data['search-results']['opensearch:totalResults'];
       console.log(`RESULT COUNT: ${resultCount}`);
+
+      // @ts-ignore
       console.log(response.data['search-results']['opensearch:Query']);
 
       //검색 결과
+      // @ts-ignore
       const papers: Paper[] = response.data['search-results'].entry.map((entry) => ({
           title: entry['dc:title'],
           doi: entry['prism:doi'],
