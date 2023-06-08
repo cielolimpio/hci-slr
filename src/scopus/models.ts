@@ -8,6 +8,11 @@ export interface Paper {
     source: string;
 }
 
+export interface RunSearchResponse {
+    resultCount: number;
+    papers: Paper[];
+}
+
 export class ScopusResponse {
     @JsonProperty('search-results')
     searchResults: SearchResults | undefined;
@@ -42,3 +47,4 @@ class Entry {
     @JsonProperty('prism:coverDate')
     prismCoverDate: Date | undefined;
 }
+
