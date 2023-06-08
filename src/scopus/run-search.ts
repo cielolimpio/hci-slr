@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { runSearchParams, ScopusSrcType } from './searchParams';
 import { Paper, RunSearchResponse, ScopusResponse } from "./models";
+import {ObjectMapper} from "json-object-mapper";
 
 const API_KEY = process.env.REACT_APP_SCOPUS_API_KEY;
 const API_URL = 'https://api.elsevier.com/content/search/scopus';
@@ -25,18 +26,19 @@ export default async function runSearch({ query, excludeKeywords, fromYear, toYe
   };
 
   try {
-    const response = await axios.get<ScopusResponse>(API_URL, {
+    const response = await axios.get<any>(API_URL, {
       params: queryParams,
     });
 
+    const scopusResponse = ScopusResponse.deserialize(response.data);
+
     //검색 총 개수
-    const resultCount = response.data.searchResults?.openSearchTotalResults;
+    const resultCount = scopusResponse.searchResults?.openSearchTotalResults;
     console.log(`RESULT COUNT: ${resultCount}`);
-    console.log(response);
 
     //검색 결과
     // @ts-ignore
-    const papers: Paper[] = response.data.searchResults.entry.map((entry) => ({
+    const papers: Paper[] = scopusResponse.searchResults?.entry?.map((entry) => ({
       title: entry.dcTitle,
       doi: entry.prismDoi,
       authorName: entry.dcCreator,
