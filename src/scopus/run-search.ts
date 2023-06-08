@@ -32,12 +32,7 @@ export default async function runSearch({ query, excludeKeywords, fromYear, toYe
     //검색 총 개수
     const resultCount = response.data.searchResults?.openSearchTotalResults;
     console.log(`RESULT COUNT: ${resultCount}`);
-
-    if (!resultCount) {
-      return null;
-    }
-
-    console.log(response.data.searchResults?.openSearchQuery);
+    console.log(response);
 
     //검색 결과
     // @ts-ignore
@@ -49,12 +44,17 @@ export default async function runSearch({ query, excludeKeywords, fromYear, toYe
       publicationYear: entry.prismCoverDate?.getFullYear(),
     }));
 
+    if (!resultCount) {
+      return null;
+    }
+
     return {
-      resultCount,
+      resultCount: 2,
       papers,
     };
 
   } catch (error) {
+    console.log(error);
     return null;
   }
 }
@@ -66,7 +66,4 @@ const exampleSearchParams: runSearchParams = {
   toYear: '2020',
   source: ScopusSrcType.Journal
 };
-
-runSearch(exampleSearchParams);
-
 

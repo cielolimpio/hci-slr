@@ -13,6 +13,11 @@ export interface RunSearchResponse {
     papers: Paper[];
 }
 
+export interface RunSearchResponse {
+    resultCount: number;
+    papers: Paper[];
+}
+
 export class ScopusResponse {
     @JsonProperty('search-results')
     searchResults: SearchResults | undefined;
@@ -23,6 +28,7 @@ class SearchResults {
     openSearchTotalResults: number | undefined;
     @JsonProperty('opensearch:Query')
     openSearchQuery: OpenSearchQuery | undefined;
+    @JsonProperty('entry')
     entry: Entry[] | undefined;
 }
 

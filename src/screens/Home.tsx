@@ -5,6 +5,23 @@ import { ScopusSrcType } from '../scopus/searchParams';
 import FilterSection from '../components/FilterSection';
 import ExcludeSection from '../components/ExcludeSection';
 import IncludeSection from '../components/IncludeSection';
+import { useNavigate } from 'react-router-dom';
+
+const checkQueryHasEmptyString = (query: string[][]) => {
+  for(let i = 0; i < query.length; i++) {
+    for(let j = 0; j < query[i].length; j++) {
+      if(query[i][j] === '') return true;
+    }
+  }
+  return false;
+}
+
+const checkExcludeKeywordsHasEmptyString = (excludeKeywords: string[]) => {
+  for(let i = 0; i < excludeKeywords.length; i++) {
+    if(excludeKeywords[i] === '') return true;
+  }
+  return false;
+}
 
 export default function Home() {
 
@@ -14,8 +31,18 @@ export default function Home() {
   const [toYear, setToYear] = useState<undefined | string>();
   const [source, setSource] = useState<undefined | ScopusSrcType>();
 
-  const handleRunSearch = () => {
-    runSearch({ query, excludeKeywords, fromYear, toYear, source });
+  const navigate = useNavigate();
+
+  const handleRunSearch = async () => {
+    console.log(query);
+    if(checkQueryHasEmptyString(query)) return alert('Please fill all the keywords');
+    if(checkExcludeKeywordsHasEmptyString(excludeKeywords)) return alert('Please fill all the exclude keywords');
+    const data = await runSearch({ query, excludeKeywords, fromYear, toYear, source });
+    if(data != null){
+      navigate('/result', { state: { data } });
+    } else {
+      alert('Something went wrong');
+    }
   }
 
   return (
