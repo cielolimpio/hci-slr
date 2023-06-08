@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { Params, useLoaderData, useLocation, useRouteError } from "react-router-dom";
 import { RunSearchResponse } from "../scopus/models";
 import IncludeSection from '../components/IncludeSection';
 import { RunSearchParams, ScopusSrcType } from "../scopus/searchParams";
@@ -8,17 +8,26 @@ import FilterSection from "../components/FilterSection";
 import sparkleIcon from '../icons/sparkle.svg';
 import Select from 'react-select';
 import { OpenaiOrKeywordsResponse } from '../openai/types';
+import runSearch from "../scopus/run-search";
+
+export const loader = async ({ request }: { request: Request }) => {
+  const url = new URL(request.url);
+  const runSearchParams = JSON.parse(url.searchParams.get("data") as string) as RunSearchParams;
+  const data = await runSearch(runSearchParams);
+  return { runSearchResponse: data, runSearchParams: runSearchParams };
+}
 
 export default function Result() {
-  const location = useLocation();
-  const runSearchResponse = location.state.runSearchResponse as RunSearchResponse;
-  const runSearchParams = location.state.runSearchParams as RunSearchParams;
+  const loaderData = useLoaderData() as { runSearchResponse: RunSearchResponse, runSearchParams: RunSearchParams };
+
+  const runSearchResponse = loaderData.runSearchResponse as RunSearchResponse;
+  const runSearchParams = loaderData.runSearchParams as RunSearchParams;
 
   const [query, setQuery] = useState<string[][]>(runSearchParams.query);
   const [excludeKeywords, setExcludeKeywords] = useState<string[]>(runSearchParams.excludeKeywords);
   const [fromYear, setFromYear] = useState<undefined | string>(runSearchParams.fromYear);
   const [toYear, setToYear] = useState<undefined | string>(runSearchParams.toYear);
-  const [source, setSource] = useState<undefined | ScopusSrcType>();
+  const [source, setSource] = useState<undefined | ScopusSrcType>(runSearchParams.source);
 
   const handleQueryHelperClick = ({ wantIncrease }: { wantIncrease: boolean }) => {
     if (wantIncrease) {
@@ -184,3 +193,14 @@ const mockOpenaiOrKeywordsResponse: OpenaiOrKeywordsResponse = {
     },
   ],
 };
+
+export function ResultErrorElement(){
+  const error = useRouteError();
+  console.error(error);
+  return (
+    <div className="text-5xl">
+      ERROR
+
+    </div>
+  );
+}

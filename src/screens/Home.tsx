@@ -5,20 +5,20 @@ import { ScopusSrcType } from '../scopus/searchParams';
 import FilterSection from '../components/FilterSection';
 import ExcludeSection from '../components/ExcludeSection';
 import IncludeSection from '../components/IncludeSection';
-import { useNavigate } from 'react-router-dom';
+import { createSearchParams, useNavigate } from 'react-router-dom';
 
 const checkQueryHasEmptyString = (query: string[][]) => {
-  for(let i = 0; i < query.length; i++) {
-    for(let j = 0; j < query[i].length; j++) {
-      if(query[i][j] === '') return true;
+  for (let i = 0; i < query.length; i++) {
+    for (let j = 0; j < query[i].length; j++) {
+      if (query[i][j] === '') return true;
     }
   }
   return false;
 }
 
 const checkExcludeKeywordsHasEmptyString = (excludeKeywords: string[]) => {
-  for(let i = 0; i < excludeKeywords.length; i++) {
-    if(excludeKeywords[i] === '') return true;
+  for (let i = 0; i < excludeKeywords.length; i++) {
+    if (excludeKeywords[i] === '') return true;
   }
   return false;
 }
@@ -35,14 +35,24 @@ export default function Home() {
 
   const handleRunSearch = async () => {
     console.log(query);
-    if(checkQueryHasEmptyString(query)) return alert('Please fill all the keywords');
-    if(checkExcludeKeywordsHasEmptyString(excludeKeywords)) return alert('Please fill all the exclude keywords');
-    const data = await runSearch({ query, excludeKeywords, fromYear, toYear, source });
-    if(data != null){
-      navigate('/result', { state: { runSearchResponse: data, runSearchParams: {query, excludeKeywords, fromYear, toYear, source}} });
-    } else {
-      alert('Something went wrong');
-    }
+    if (checkQueryHasEmptyString(query)) return alert('Please fill all the keywords');
+    if (checkExcludeKeywordsHasEmptyString(excludeKeywords)) return alert('Please fill all the exclude keywords');
+
+
+    navigate({
+      pathname: '/result',
+      search: createSearchParams({
+        data: JSON.stringify(
+          {
+            query,
+            excludeKeywords,
+            fromYear,
+            toYear,
+            source,
+          }
+        ),
+      }).toString(),
+    });
   }
 
   return (

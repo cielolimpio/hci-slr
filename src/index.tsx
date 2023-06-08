@@ -4,20 +4,29 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Home from './screens/Home';
-import { Route, Routes, BrowserRouter } from 'react-router-dom';
-import Result from './screens/Result';
+import { createBrowserRouter, RouterProvider,  } from 'react-router-dom';
+import Result, {loader as resultLoader, ResultErrorElement} from './screens/Result';
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Home />,
+  },
+  {
+    path: '/result',
+    element: <Result/>,
+    loader: resultLoader,
+    errorElement: <ResultErrorElement />
+  },
+]);
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<Home />}></Route>
-        <Route path='/result' element={<Result/>}></Route>
-      </Routes>
-    </BrowserRouter>
+    <RouterProvider router={router} />
   </React.StrictMode >
 );
 
