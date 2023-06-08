@@ -39,10 +39,10 @@ export default function ExcludeSection({ excludeKeywords, setExcludeKeywords }: 
 
   return (
     <div className='w-full h-full flex flex-col items-center'>
-      <div className='w-64 h-full flex flex-col items-center gap-4'>
+      <div className='w-full h-full flex flex-col items-center gap-4'>
         <div className='w-full rounded-md border-dashed border-[1px] border-darkgray px-2 gap-4 py-1.5 flex flex-row justify-between'>
           <input
-            className='w-full text-black placeholder:text-darkgray outline-none bg-lightgray'
+            className='w-full text-black placeholder:text-darkgray outline-none bg-transparent'
             type="text" placeholder='add keyword' onKeyDown={handleKeyDown}
             ref={addInputRef}
           />

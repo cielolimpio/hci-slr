@@ -7,7 +7,7 @@ export enum ScopusSrcType {
     Trade_Journal = 'd',
 }
 
-export interface runSearchParams {
+export interface RunSearchParams {
     query: string[][],
     excludeKeywords: string[],
     fromYear: string | undefined,

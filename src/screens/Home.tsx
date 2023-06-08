@@ -39,7 +39,7 @@ export default function Home() {
     if(checkExcludeKeywordsHasEmptyString(excludeKeywords)) return alert('Please fill all the exclude keywords');
     const data = await runSearch({ query, excludeKeywords, fromYear, toYear, source });
     if(data != null){
-      navigate('/result', { state: { data } });
+      navigate('/result', { state: { runSearchResponse: data, runSearchParams: {query, excludeKeywords, fromYear, toYear, source}} });
     } else {
       alert('Something went wrong');
     }
@@ -72,7 +72,7 @@ export default function Home() {
           <div className='h-full flex-1 flex flex-row gap-4'>
             <div className='h-full flex-1 flex flex-col gap-6 items-center'>
               <h3 className='text-center font-semibold text-2xl'>Include</h3>
-              <div className='w-full flex-1'>
+              <div className='w-72 flex-1'>
                 <IncludeSection query={query} setQuery={setQuery} />
               </div>
             </div>
@@ -80,13 +80,13 @@ export default function Home() {
           <div className='h-full flex-1 flex flex-col gap-8'>
             <div className='flex-1 flex flex-col gap-6 items-center'>
               <h3 className='text-center font-semibold text-2xl'>Exclude</h3>
-              <div className='w-full flex-1'>
+              <div className='w-72 flex-1'>
                 <ExcludeSection excludeKeywords={excludeKeywords} setExcludeKeywords={setExcludeKeywords} />
               </div>
             </div>
             <div className='flex-1 flex flex-col gap-6 items-center pb-20'>
               <h3 className='text-center font-semibold text-2xl'>Filter</h3>
-              <div className='w-full flex-1 flex flex-col gap-4 items-center'>
+              <div className='w-72 flex-1 flex flex-col gap-4 items-center'>
                 <FilterSection
                   fromYear={fromYear} toYear={toYear} source={source}
                   setFromYear={setFromYear} setToYear={setToYear} setSource={setSource}

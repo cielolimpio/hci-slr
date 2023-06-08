@@ -1,15 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import addIcon from '../icons/add.svg';
 import deleteIcon from '../icons/delete.svg';
+import sparkleIcon from '../icons/sparkle.svg';
 
 interface IncludeSectoinProps {
   query: string[][];
   setQuery: React.Dispatch<React.SetStateAction<string[][]>>;
+  handleQueryHelperClick?: ({ wantIncrease }: { wantIncrease: boolean }) => void;
 }
 
-export default function IncludeSection({ query, setQuery }: IncludeSectoinProps) {
+export default function IncludeSection({ query, setQuery, handleQueryHelperClick }: IncludeSectoinProps) {
 
   const [isAddedCurrently, setIsAddedCurrently] = useState<boolean>(false);
+
+  const [showQueryHelper, setShowQueryHelper] = useState<boolean>(handleQueryHelperClick !== undefined);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, andIndex: number, orIndex: number) => {
     if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
@@ -56,6 +60,20 @@ export default function IncludeSection({ query, setQuery }: IncludeSectoinProps)
     }
   }
 
+  const handleQHIncreaseButtonClick = () => {
+    if (handleQueryHelperClick) {
+      handleQueryHelperClick({ wantIncrease: true });
+      setShowQueryHelper(false);
+    }
+  }
+
+  const handleQHDecreaseButtonClick = () => {
+    if (handleQueryHelperClick) {
+      handleQueryHelperClick({ wantIncrease: false });
+      setShowQueryHelper(false);
+    }
+  }
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -68,8 +86,8 @@ export default function IncludeSection({ query, setQuery }: IncludeSectoinProps)
   }, [isAddedCurrently]);
 
   return (
-    <div className='w-full h-full flex flex-col items-center'>
-      <div className='w-72 flex flex-col items-center p-2 rounded-2xl bg-white shadow-md'>
+    <div className={`w-full h-full flex flex-col items-center relative ${showQueryHelper && 'min-h-[360px]'}`}>
+      <div className='w-full flex flex-col items-center p-2 rounded-2xl bg-lightergray shadow-md'>
         {query.map((group, i) => (
           <div className='w-full flex flex-col items-center' key={i}>
             <div className='w-full p-2 rounded-xl bg-lightgray shadow-inner flex flex-col items-center' key={i}>
@@ -131,6 +149,31 @@ export default function IncludeSection({ query, setQuery }: IncludeSectoinProps)
         </div>
         <div className='h-1'></div>
       </div>
+      {showQueryHelper && 
+      <div className="absolute -inset-1 bg-blurwhite bg-opacity-20 backdrop-blur-md rounded-2xl flex flex-col">
+        <div className="w-full h-full relative">
+          <div className="w-full h-full flex flex-col gap-2 items-center justify-center">
+            <div className="flex flex-row gap-2.5">
+              <img src={sparkleIcon} alt="sparkle Icon" />
+              <h3 className="font-bold text-xl text-blue">Query Helper</h3>
+              <img src={sparkleIcon} alt="sparkle Icon" />
+            </div>
+            <p className="text-lg font-semibold">Too many/litte results?</p>
+            <p className="text-md">Click to get new queries<br />recommended by GPT!</p>
+            <div className="w-full flex flex-col px-6 gap-2.5">
+              <div className="w-full rounded-lg bg-white py-2 px-3 shadow-md cursor-pointer" onClick={handleQHIncreaseButtonClick}>
+                <p className="text-center text-md font-bold">Increase results</p>
+              </div>
+              <div className="w-full rounded-lg bg-white py-2 px-3 shadow-md cursor-pointer" onClick={handleQHDecreaseButtonClick}>
+                <p className="text-center text-md font-bold">Decrease results</p>
+              </div>
+            </div>
+          </div>
+          <div className="absolute p-4 right-0 top-0 cursor-pointer" onClick={()=>{setShowQueryHelper(false)}}>
+            <img className="h-5" src={deleteIcon} alt="delete Icon" />
+          </div>
+        </div>
+      </div>}
     </div>
   );
 }

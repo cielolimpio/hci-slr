@@ -43,8 +43,8 @@ export default function FilterSection({ fromYear, toYear, source, setFromYear, s
     <div className='w-full h-full flex flex-col items-center'>
       <div className='w-72 flex flex-col gap-4'>
         <div className='w-full flex flex-col gap-2'>
-          <h3 className='ml-2'>Publish Date</h3>
-          <div className='w-full flex flex-row gap-2 pl-6 items-center justify-between'>
+          <h3 className='text-xl'>Publish Date</h3>
+          <div className='w-full flex flex-row gap-2 items-center justify-between'>
             <Select className='flex-1'
               placeholder="From"
               options={yearOptions}
@@ -63,8 +63,8 @@ export default function FilterSection({ fromYear, toYear, source, setFromYear, s
           </div>
         </div>
         <div className='w-full flex flex-col gap-2'>
-          <h3 className='ml-2'>Source</h3>
-          <div className='w-full pl-6'>
+          <h3 className='text-xl'>Source</h3>
+          <div className='w-full'>
             <Select className='flex-1'
               placeholder="Source"
               options={sourceOptions}

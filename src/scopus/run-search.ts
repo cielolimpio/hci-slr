@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { runSearchParams, ScopusSrcType } from './searchParams';
+import { RunSearchParams, ScopusSrcType } from './searchParams';
 import { Paper, RunSearchResponse, ScopusResponse } from "./models";
 import {ObjectMapper} from "json-object-mapper";
 
@@ -7,7 +7,7 @@ const API_KEY = process.env.REACT_APP_SCOPUS_API_KEY;
 const API_URL = 'https://api.elsevier.com/content/search/scopus';
 const MAX_COUNT = 25;
 
-export default async function runSearch({ query, excludeKeywords, fromYear, toYear, source }: runSearchParams,
+export default async function runSearch({ query, excludeKeywords, fromYear, toYear, source }: RunSearchParams,
   start = 0, //검색 결과 페이지 시작
   count = 25 //한번에 보이는 검색 결과 개수
 ): Promise<RunSearchResponse | null> {
@@ -61,7 +61,7 @@ export default async function runSearch({ query, excludeKeywords, fromYear, toYe
   }
 }
 
-const exampleSearchParams: runSearchParams = {
+const exampleSearchParams: RunSearchParams = {
   query: [['computer science'], ['HCI', 'Human computer interaction']],
   excludeKeywords: ['algorithm', 'machine learning'],
   fromYear: '2015',
