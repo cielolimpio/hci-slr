@@ -53,6 +53,16 @@ export default function OrQueryHelper({ runSearchParams, handleDecreaseResultsCl
           // 결론은 OpenaiOrKeywordsResponse에 count들을 다 채워넣어서 아래의
           // response 대신에 newResponse를 넣어주면 됨.
           // 나머지는 다시 내가함.
+
+          // 아래는 word를 추가하여 runSearch할 때 참고할 코드
+          // const newQuery = [...query];
+          // newQuery[selectedSubQueryGroupIndex] = [...newQuery[selectedSubQueryGroupIndex], word];
+          // const newRunSearchParams = {
+          //   ...runSearchParams,
+          // };
+          // newRunSearchParams.query = newQuery;
+          // runSearch(newQuery);
+
           setOpenaiOrKeywordsResponse(response);
           setSelectedOption(response.list[0].synonyms[0].word);
           setIsLoading(false);
