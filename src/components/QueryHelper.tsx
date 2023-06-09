@@ -10,11 +10,13 @@ export default function QueryHelper({ setShowQueryHelper, setShowOrQueryHelper, 
 
   const handleIncreaseResultsClick = () => {
     setShowOrQueryHelper(true);
+    setShowAndQueryHelper(false);
     setShowQueryHelper(false);
   }
 
   const handleDecreaseResultsClick = () => {
     setShowAndQueryHelper(true);
+    setShowOrQueryHelper(false);
     setShowQueryHelper(false);
   }
 

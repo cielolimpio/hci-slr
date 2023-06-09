@@ -127,9 +127,11 @@ export default function Result() {
   const handleQueryHelperClick = ({ wantIncrease }: { wantIncrease: boolean }) => {
     if (wantIncrease) {
       setShowOrQueryHelper(true);
+      setShowAndQueryHelper(false);
       setShowQueryHelper(false);
     } else {
       setShowAndQueryHelper(true);
+      setShowOrQueryHelper(false);
       setShowQueryHelper(false);
     }
   }
@@ -218,19 +220,19 @@ export default function Result() {
             </div>
           </div>
         </div>
-        <div className={`absolute left-4 top-12 w-80 transition-transform duration-500 ${showOrQueryHelper ? 'translate-x-0' : '-translate-x-96'}`}>
+        <div className={`absolute left-4 top-20 w-80 transition-transform duration-500 ${showOrQueryHelper ? 'translate-x-0' : '-translate-x-96'}`}>
           <OrQueryHelper
             runSearchParams={runSearchParams} openaiOrKeywordsResponse={mockOpenaiOrKeywordsResponse}
             handleDecreaseResultsClick={handleDecreaseResultsClick} setShowOrQueryHelper={setShowOrQueryHelper}
           />
         </div>
-        <div className={`absolute left-4 top-12 w-80 transition-transform duration-500 ${showAndQueryHelper ? 'translate-x-0' : '-translate-x-96'}`}>
+        <div className={`absolute left-4 top-20 w-80 transition-transform duration-500 ${showAndQueryHelper ? 'translate-x-0' : '-translate-x-96'}`}>
           <AndQueryHelper
             runSearchParams={runSearchParams} openaiAndKeywordsResponse={mockOpenaiAndKeywordsResponse}
             handleIncreaseResultsClick={handleIncreaseResultsClick} setShowAndQueryHelper={setShowAndQueryHelper}
           />
         </div>
-        <div className={`absolute left-4 top-12 w-80 transition-transform duration-500 ${showQueryHelper ? 'translate-x-0' : '-translate-x-96'}`}>
+        <div className={`absolute left-4 top-20 w-80 transition-transform duration-500 ${showQueryHelper ? 'translate-x-0' : '-translate-x-96'}`}>
           <QueryHelper
             setShowQueryHelper={setShowQueryHelper}
             setShowAndQueryHelper={setShowAndQueryHelper}
