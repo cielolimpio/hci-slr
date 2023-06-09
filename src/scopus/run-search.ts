@@ -1,16 +1,21 @@
 import axios from 'axios';
 import { RunSearchParams, ScopusSrcType } from './searchParams';
 import { Paper, RunSearchResponse, ScopusResponse } from "./models";
-import {ObjectMapper} from "json-object-mapper";
+import { ObjectMapper } from "json-object-mapper";
 
 const API_KEY = process.env.REACT_APP_SCOPUS_API_KEY;
 const API_URL = 'https://api.elsevier.com/content/search/scopus';
 const MAX_COUNT = 25;
 
-export default async function runSearch({ query, excludeKeywords, fromYear, toYear, source }: RunSearchParams,
-  start = 0, //검색 결과 페이지 시작
-  count = 25 //한번에 보이는 검색 결과 개수
-): Promise<RunSearchResponse | null> {
+export default async function runSearch({
+  query,
+  excludeKeywords,
+  fromYear,
+  toYear,
+  source,
+  start = 0,
+  count = 25,
+}: RunSearchParams): Promise<RunSearchResponse | null> {
   const keywordQuery = query.map(innerArray => `(${innerArray.join(' OR ')})`).join(' AND ');
   const excludeQuery = excludeKeywords.map(keyword => ` AND NOT ${keyword}`);
   const sourceQuery = source ? ` AND (SRCTYPE(${source}))` : '';
@@ -23,11 +28,6 @@ export default async function runSearch({ query, excludeKeywords, fromYear, toYe
     query: `TITLE-ABS-KEY(${keywordQuery}${excludeQuery})${sourceQuery}${dateQuery}`,
     start,
     count
-  };
-
-  return {
-    resultCount: 0,
-    papers: [],
   };
 
   try {
@@ -56,7 +56,7 @@ export default async function runSearch({ query, excludeKeywords, fromYear, toYe
     }
 
     return {
-      resultCount: 2,
+      resultCount: resultCount,
       papers,
     };
 

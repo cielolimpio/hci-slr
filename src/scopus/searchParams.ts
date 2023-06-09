@@ -13,6 +13,8 @@ export interface RunSearchParams {
     fromYear: string | undefined,
     toYear: string | undefined,
     source: ScopusSrcType | undefined,
+    start?: number,
+    count?: number,
 }
 
 

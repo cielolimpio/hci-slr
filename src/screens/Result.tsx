@@ -1,14 +1,18 @@
 import { useLoaderData, useRouteError } from "react-router-dom";
-import { RunSearchResponse } from "../scopus/models";
+import { Paper, RunSearchResponse } from "../scopus/models";
 import IncludeSection from '../components/IncludeSection';
 import { RunSearchParams, ScopusSrcType } from "../scopus/searchParams";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ExcludeSection from "../components/ExcludeSection";
 import FilterSection from "../components/FilterSection";
 import { OpenaiAndKeywordsResponse, OpenaiOrKeywordsResponse } from '../openai/types';
 import runSearch from "../scopus/run-search";
 import OrQueryHelper from "../components/OrQueryHelper";
 import AndQueryHelper from "../components/AndQueryHelper";
+
+import exportIcon from '../icons/export.svg';
+import PaperTable from "../components/PaperTable";
+import scrollTopIcon from '../icons/scrolltop.svg';
 
 export const loader = async ({ request }: { request: Request }) => {
   const url = new URL(request.url);
@@ -34,9 +38,54 @@ export default function Result() {
   const [fromYear, setFromYear] = useState<undefined | string>(runSearchParams.fromYear);
   const [toYear, setToYear] = useState<undefined | string>(runSearchParams.toYear);
   const [source, setSource] = useState<undefined | ScopusSrcType>(runSearchParams.source);
+  const [papers, setPapers] = useState<Paper[]>(runSearchResponse.papers);
+  const keywordQuery = query.map(innerArray => `(${innerArray.join(' OR ')})`).join(' AND ');
+  const excludeQuery = excludeKeywords.map(keyword => ` AND NOT ${keyword}`);
 
   const [showOrQueryHelper, setShowOrQueryHelper] = useState<boolean>(false);
   const [showAndQueryHelper, setShowAndQueryHelper] = useState<boolean>(false);
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const observeTarget = useRef<HTMLDivElement>(null);
+
+  const intersectionCallback = (entries: IntersectionObserverEntry[]) => {
+    const target = entries[0];
+    if (target.isIntersecting) {
+      setCurrentPage(prev => prev + 1);
+    }
+  }
+
+  const loadMore = async () => {
+    if ((papers.length < runSearchResponse.resultCount) && !isLoading) {
+      setIsLoading(true);
+      console.log(papers.length);
+      const newData = await runSearch({ ...runSearchParams, start: papers.length });
+      if (newData == null) {
+        alert('Something went wrong');
+      } else {
+        setPapers(prev => [...prev, ...newData.papers]);
+      }
+      setIsLoading(false);
+    }
+  }
+
+  const observer = new IntersectionObserver(intersectionCallback);
+
+  useEffect(() => {
+    observer.observe(observeTarget.current as HTMLDivElement);
+    return () => {
+      if (observeTarget.current)
+        observer.unobserve(observeTarget.current as HTMLDivElement);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadMore();
+  }, [currentPage]);
+
+
 
   const handleQueryHelperClick = ({ wantIncrease }: { wantIncrease: boolean }) => {
     if (wantIncrease) {
@@ -56,8 +105,21 @@ export default function Result() {
     setShowOrQueryHelper(true);
   }
 
+  const handleExportButtonClick = () => {
+    console.log('export');
+  }
+
+  const mainScrollRef = useRef<HTMLDivElement>(null);
+
+  const handleScrollToTop = () => {
+    if (mainScrollRef.current) {
+      console.log('hi');
+      mainScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
   return (
-    <div className="w-full h-full flex flex-row">
+    <div className="w-full h-full flex flex-row bg-lightgray">
       <div className="w-80 h-full bg-white relative z-10">
         <div className="h-full flex flex-col pt-6 pb-24 px-4 gap-6 overflow-y-scroll">
           <h1 className="text-4xl font-bold text-blue">New Scopus</h1>
@@ -82,18 +144,47 @@ export default function Result() {
           </div>
         </div>
       </div>
-      <div className="flex-1 bg-green-100 relative">
+      <div className="flex-1 relative px-4 pt-4 pb-12 overflow-y-scroll" ref={mainScrollRef}>
+        <div className="w-full bg-white rounded-2xl flex flex-col">
+          <div className="w-full flex flex-row justify-between">
+            <div className="w-7/12 flex flex-col p-6">
+              <h1 className="text-4xl font-bold ">Total: {runSearchResponse.resultCount} results</h1>
+              <p className="text-xl font-light">{keywordQuery}{excludeQuery}</p>
+            </div>
+            <div className="flex flex-row p-6 items-start gap-5">
+              <div className="rounded-lg bg-gray px-2.5 py-2.5 flex flex-row gap-2.5 cursor-pointer" onClick={handleExportButtonClick}>
+                <img src={exportIcon} alt="export Icon" />
+                <p className="text-darkgray ">Export</p>
+              </div>
+            </div>
+          </div>
+          <div className="px-4 pb-2 flex flex-col">
+            <div className="w-full h-[1px] bg-gray"></div>
+            <PaperTable papers={papers} />
+            <div className="w-full" ref={observeTarget}>
+              {
+                isLoading &&
+                <div className="w-full py-4">
+                  <p className="text-center text-xl">Loading...</p>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
         <div className={`absolute left-4 top-12 w-80 transition-transform duration-500 ${showOrQueryHelper ? 'translate-x-0' : '-translate-x-96'}`}>
-          <OrQueryHelper 
-          runSearchParams={runSearchParams} openaiOrKeywordsResponse={mockOpenaiOrKeywordsResponse} 
-          handleDecreaseResultsClick={handleDecreaseResultsClick} setShowOrQueryHelper={setShowOrQueryHelper}
+          <OrQueryHelper
+            runSearchParams={runSearchParams} openaiOrKeywordsResponse={mockOpenaiOrKeywordsResponse}
+            handleDecreaseResultsClick={handleDecreaseResultsClick} setShowOrQueryHelper={setShowOrQueryHelper}
           />
         </div>
         <div className={`absolute left-4 top-12 w-80 transition-transform duration-500 ${showAndQueryHelper ? 'translate-x-0' : '-translate-x-96'}`}>
-          <AndQueryHelper 
-          runSearchParams={runSearchParams} openaiAndKeywordsResponse={mockOpenaiAndKeywordsResponse} 
-          handleIncreaseResultsClick={handleIncreaseResultsClick} setShowAndQueryHelper={setShowAndQueryHelper}
+          <AndQueryHelper
+            runSearchParams={runSearchParams} openaiAndKeywordsResponse={mockOpenaiAndKeywordsResponse}
+            handleIncreaseResultsClick={handleIncreaseResultsClick} setShowAndQueryHelper={setShowAndQueryHelper}
           />
+        </div>
+        <div className="fixed right-4 bottom-4 rounded-full bg-lightergray border-2 border-lightgray shadow-2xl cursor-pointer" onClick={handleScrollToTop}>
+          <img className="w-12 h-12" src={scrollTopIcon} alt="scroll top" />
         </div>
       </div>
     </div>
