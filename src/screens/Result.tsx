@@ -2,7 +2,7 @@ import { createSearchParams, useLoaderData, useNavigate, useRouteError } from "r
 import { Paper, RunSearchResponse } from "../scopus/models";
 import IncludeSection from '../components/IncludeSection';
 import { RunSearchParams, ScopusSrcType } from "../scopus/searchParams";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ExcludeSection from "../components/ExcludeSection";
 import FilterSection from "../components/FilterSection";
 import { OpenaiAndKeywordsResponse, OpenaiOrKeywordsResponse } from '../openai/types';
@@ -48,7 +48,7 @@ export default function Result() {
   const keywordQuery = query.map(innerArray => `(${innerArray.join(' OR ')})`).join(' AND ');
   const excludeQuery = excludeKeywords.map(keyword => ` AND NOT ${keyword}`);
 
-  const [showOrQueryHelper, setShowOrQueryHelper] = useState<boolean>(false);
+  const [showOrQueryHelper, setShowOrQueryHelper] = useState<boolean>(true);
   const [showAndQueryHelper, setShowAndQueryHelper] = useState<boolean>(false);
   const [showQueryHelper, setShowQueryHelper] = useState<boolean>(false);
 
@@ -222,7 +222,7 @@ export default function Result() {
         </div>
         <div className={`absolute left-4 top-20 w-80 transition-transform duration-500 ${showOrQueryHelper ? 'translate-x-0' : '-translate-x-96'}`}>
           <OrQueryHelper
-            runSearchParams={runSearchParams} openaiOrKeywordsResponse={mockOpenaiOrKeywordsResponse}
+            runSearchParams={runSearchParams} showOrQueryHelper={showOrQueryHelper}
             handleDecreaseResultsClick={handleDecreaseResultsClick} setShowOrQueryHelper={setShowOrQueryHelper}
           />
         </div>

@@ -21,6 +21,11 @@ export default async function runSearch({
   const sourceQuery = source ? ` AND (SRCTYPE(${source}))` : '';
   const dateQuery = `${fromYear ? ` AND PUBYEAR > ${fromYear} ` : ''}${toYear ? `AND PUBYEAR < ${toYear}` : ''}`;
 
+  return {
+    resultCount: 0,
+    papers: [],
+  } ;
+
   count = count > MAX_COUNT ? MAX_COUNT : count;
 
   const queryParams = {
@@ -30,6 +35,7 @@ export default async function runSearch({
     count
   };
 
+ 
   try {
     const response = await axios.get<any>(API_URL, {
       params: queryParams,
@@ -55,10 +61,10 @@ export default async function runSearch({
       return null;
     }
 
-    return {
-      resultCount: resultCount,
-      papers,
-    };
+    // return {
+    //   resultCount: resultCount,
+    //   papers,
+    // };
 
   } catch (error) {
     console.log(error);

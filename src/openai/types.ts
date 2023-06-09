@@ -13,4 +13,5 @@ export interface OpenaiAndKeywordsResponse {
 interface WordAndWhy {
     word: string,
     why: string
+    count?: number
 }
