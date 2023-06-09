@@ -41,7 +41,7 @@ export default function FilterSection({ fromYear, toYear, source, setFromYear, s
 
   return (
     <div className='w-full h-full flex flex-col items-center'>
-      <div className='w-72 flex flex-col gap-4'>
+      <div className='w-72 flex flex-col gap-4 px-2'>
         <div className='w-full flex flex-col gap-2'>
           <h3 className='text-xl'>Publish Date</h3>
           <div className='w-full flex flex-row gap-2 items-center justify-between'>

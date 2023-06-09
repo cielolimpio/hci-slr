@@ -25,6 +25,11 @@ export default async function runSearch({ query, excludeKeywords, fromYear, toYe
     count
   };
 
+  return {
+    resultCount: 0,
+    papers: [],
+  };
+
   try {
     const response = await axios.get<any>(API_URL, {
       params: queryParams,

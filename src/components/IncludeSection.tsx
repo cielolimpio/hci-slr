@@ -150,7 +150,7 @@ export default function IncludeSection({ query, setQuery, handleQueryHelperClick
         <div className='h-1'></div>
       </div>
       {showQueryHelper && 
-      <div className="absolute -inset-1 bg-blurwhite bg-opacity-20 backdrop-blur-md rounded-2xl flex flex-col">
+      <div className="absolute -inset-1 bg-blurwhite bg-opacity-50 backdrop-blur-md rounded-2xl flex flex-col">
         <div className="w-full h-full relative">
           <div className="w-full h-full flex flex-col gap-2 items-center justify-center">
             <div className="flex flex-row gap-2.5">
