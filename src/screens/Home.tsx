@@ -7,7 +7,7 @@ import ExcludeSection from '../components/ExcludeSection';
 import IncludeSection from '../components/IncludeSection';
 import { createSearchParams, useNavigate } from 'react-router-dom';
 
-const checkQueryHasEmptyString = (query: string[][]) => {
+export const checkQueryHasEmptyString = (query: string[][]) => {
   for (let i = 0; i < query.length; i++) {
     for (let j = 0; j < query[i].length; j++) {
       if (query[i][j] === '') return true;
@@ -16,7 +16,7 @@ const checkQueryHasEmptyString = (query: string[][]) => {
   return false;
 }
 
-const checkExcludeKeywordsHasEmptyString = (excludeKeywords: string[]) => {
+export const checkExcludeKeywordsHasEmptyString = (excludeKeywords: string[]) => {
   for (let i = 0; i < excludeKeywords.length; i++) {
     if (excludeKeywords[i] === '') return true;
   }

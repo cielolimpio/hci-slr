@@ -1,4 +1,4 @@
-import { useLoaderData, useRouteError } from "react-router-dom";
+import { createSearchParams, useLoaderData, useNavigate, useRouteError } from "react-router-dom";
 import { Paper, RunSearchResponse } from "../scopus/models";
 import IncludeSection from '../components/IncludeSection';
 import { RunSearchParams, ScopusSrcType } from "../scopus/searchParams";
@@ -13,6 +13,10 @@ import AndQueryHelper from "../components/AndQueryHelper";
 import exportIcon from '../icons/export.svg';
 import PaperTable from "../components/PaperTable";
 import scrollTopIcon from '../icons/scrolltop.svg';
+import drawerRightIcon from '../icons/drawerright.svg';
+import drawerLeftIcon from '../icons/drawerleft.svg';
+import { checkExcludeKeywordsHasEmptyString, checkQueryHasEmptyString } from "./Home";
+import QueryHelper from "../components/QueryHelper";
 
 export const loader = async ({ request }: { request: Request }) => {
   const url = new URL(request.url);
@@ -26,12 +30,14 @@ export default function Result() {
   const loaderData = useLoaderData() as { runSearchResponse: RunSearchResponse, runSearchParams: RunSearchParams };
   const runSearchResponse = loaderData.runSearchResponse as RunSearchResponse;
   const runSearchParams = loaderData.runSearchParams as RunSearchParams;
+  const navigate = useNavigate();
 
   const [query, setQuery] = useState<string[][]>(runSearchParams.query);
 
   useEffect(() => {
     const newQuery = runSearchParams.query.filter((orQuery) => orQuery.length !== 0);
     setQuery(newQuery);
+    setPapers(runSearchResponse.papers);
   }, [loaderData]);
 
   const [excludeKeywords, setExcludeKeywords] = useState<string[]>(runSearchParams.excludeKeywords);
@@ -44,6 +50,7 @@ export default function Result() {
 
   const [showOrQueryHelper, setShowOrQueryHelper] = useState<boolean>(false);
   const [showAndQueryHelper, setShowAndQueryHelper] = useState<boolean>(false);
+  const [showQueryHelper, setShowQueryHelper] = useState<boolean>(false);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -85,27 +92,61 @@ export default function Result() {
     loadMore();
   }, [currentPage]);
 
+  const showAnyQueryHelper = showAndQueryHelper || showOrQueryHelper || showQueryHelper;
 
+  const handleDrawerIconClick = () => {
+    if (showAnyQueryHelper) {
+      setShowAndQueryHelper(false);
+      setShowOrQueryHelper(false);
+      setShowQueryHelper(false);
+    } else {
+      setShowQueryHelper(true);
+    }
+  }
+
+  const handleRunSearchClick = () => {
+    if (checkQueryHasEmptyString(query)) return alert('Please fill all the keywords');
+    if (checkExcludeKeywordsHasEmptyString(excludeKeywords)) return alert('Please fill all the exclude keywords');
+    navigate({
+      pathname: '/result',
+      search: createSearchParams({
+        data: JSON.stringify({
+          query: query,
+          excludeKeywords: excludeKeywords,
+          fromYear: fromYear,
+          toYear: toYear,
+          source: source,
+        }),
+      }).toString(),
+    });
+  }
+  const handleLogoClick = () => {
+    navigate('/');
+  }
 
   const handleQueryHelperClick = ({ wantIncrease }: { wantIncrease: boolean }) => {
     if (wantIncrease) {
       setShowOrQueryHelper(true);
+      setShowQueryHelper(false);
     } else {
       setShowAndQueryHelper(true);
+      setShowQueryHelper(false);
     }
   }
 
   const handleDecreaseResultsClick = () => {
-    setShowOrQueryHelper(false);
     setShowAndQueryHelper(true);
+    setShowOrQueryHelper(false);
   }
 
   const handleIncreaseResultsClick = () => {
-    setShowAndQueryHelper(false);
     setShowOrQueryHelper(true);
+    setShowAndQueryHelper(false);
   }
 
   const handleExportButtonClick = () => {
+    // TODO: papers to csv
+    // if papers.length < runSearchResponse.resultCount fetch more and then export
     console.log('export');
   }
 
@@ -122,9 +163,15 @@ export default function Result() {
     <div className="w-full h-full flex flex-row bg-lightgray">
       <div className="w-80 h-full bg-white relative z-10">
         <div className="h-full flex flex-col pt-6 pb-24 px-4 gap-6 overflow-y-scroll">
-          <h1 className="text-4xl font-bold text-blue">New Scopus</h1>
+          <h1 className="text-4xl font-bold text-blue cursor-pointer" onClick={handleLogoClick}>New Scopus</h1>
           <div className="flex flex-col gap-3">
-            <h2 className="text-2xl font-semibold">Include</h2>
+            <div className="flex flex-row justify-between items-center">
+              <h2 className="text-2xl font-semibold">Include</h2>
+              <img className="w-5 h-5 cursor-pointer"
+                src={showAnyQueryHelper ? drawerLeftIcon : drawerRightIcon}
+                alt={showAndQueryHelper ? 'drawer left icon' : 'drawer right icon'} onClick={handleDrawerIconClick}
+              />
+            </div>
             <div className="w-full">
               <IncludeSection query={query} setQuery={setQuery} handleQueryHelperClick={handleQueryHelperClick} />
             </div>
@@ -139,7 +186,7 @@ export default function Result() {
           </div>
         </div>
         <div className="absolute left-0 right-0 bottom-0 pl-4 pr-8 py-4">
-          <div className="w-full h-full rounded-xl py-2.5 bg-blue">
+          <div className="w-full h-full rounded-xl py-2.5 bg-blue cursor-pointer" onClick={handleRunSearchClick}>
             <p className="text-2xl font-semibold text-white text-center">RUN SEARCH</p>
           </div>
         </div>
@@ -181,6 +228,13 @@ export default function Result() {
           <AndQueryHelper
             runSearchParams={runSearchParams} openaiAndKeywordsResponse={mockOpenaiAndKeywordsResponse}
             handleIncreaseResultsClick={handleIncreaseResultsClick} setShowAndQueryHelper={setShowAndQueryHelper}
+          />
+        </div>
+        <div className={`absolute left-4 top-12 w-80 transition-transform duration-500 ${showQueryHelper ? 'translate-x-0' : '-translate-x-96'}`}>
+          <QueryHelper
+            setShowQueryHelper={setShowQueryHelper}
+            setShowAndQueryHelper={setShowAndQueryHelper}
+            setShowOrQueryHelper={setShowOrQueryHelper}
           />
         </div>
         <div className="fixed right-4 bottom-4 rounded-full bg-lightergray border-2 border-lightgray shadow-2xl cursor-pointer" onClick={handleScrollToTop}>
