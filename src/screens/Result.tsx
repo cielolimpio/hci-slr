@@ -21,6 +21,7 @@ import QueryHelper from "../components/QueryHelper";
 
 import Papa from "papaparse";
 import { saveAs } from 'file-saver';
+import { run } from "node:test";
 
 export const loader = async ({ request }: { request: Request }) => {
   const url = new URL(request.url);
@@ -39,6 +40,7 @@ export default function Result() {
   const [query, setQuery] = useState<string[][]>(runSearchParams.query);
 
   useEffect(() => {
+    console.log('hi');
     const newQuery = runSearchParams.query.filter((orQuery) => orQuery.length !== 0);
     setQuery(newQuery);
     setPapers(runSearchResponse.papers);
@@ -237,7 +239,7 @@ export default function Result() {
         </div>
       </div>
       <div className="flex-1 relative px-4 pt-4 pb-12 overflow-y-scroll" ref={mainScrollRef}>
-        <div className="w-full bg-white rounded-2xl flex flex-col">
+        <div className="w-full bg-white rounded-2xl flex flex-col">x
           <div className="w-full flex flex-row justify-between">
             <div className="w-7/12 flex flex-col p-6">
               <h1 className="text-4xl font-bold ">Total: {runSearchResponse.resultCount} results</h1>

@@ -1,5 +1,5 @@
 import Select, { SingleValue } from 'react-select';
-import { ScopusSrcType } from "../scopus/searchParams";
+import { ScopusSrcType, sourceToLabelMap } from "../scopus/searchParams";
 
 interface FilterSectionProps {
   fromYear: undefined | string;
@@ -10,7 +10,6 @@ interface FilterSectionProps {
   setSource: React.Dispatch<React.SetStateAction<undefined | ScopusSrcType>>;
 }
 
-
 interface OptionType {
   value: string;
   label: string;
@@ -19,7 +18,7 @@ interface OptionType {
 const years: string[] = Array.from({ length: 64 }, (_, i) => i === 63 ? "Before 1960" : (2023 - i).toString());
 const yearOptions = years.map(year => ({ value: year, label: year }));
 const sources = Object.values(ScopusSrcType);
-const sourceOptions = sources.map(source => ({ value: source, label: source }));
+const sourceOptions = sources.map(source => ({ value: source, label: sourceToLabelMap[source] }));
 
 export default function FilterSection({ fromYear, toYear, source, setFromYear, setToYear, setSource }: FilterSectionProps) {
 

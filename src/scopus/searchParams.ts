@@ -7,6 +7,15 @@ export enum ScopusSrcType {
     Trade_Journal = 'd',
 }
 
+export const sourceToLabelMap = {
+    [ScopusSrcType.Journal]: 'journal',
+    [ScopusSrcType.Book]: 'book',
+    [ScopusSrcType.Book_Series]: 'book series',
+    [ScopusSrcType.Conference_Proceeding]: 'conference proceeding',
+    [ScopusSrcType.Report]: 'report',
+    [ScopusSrcType.Trade_Journal]: 'trade journal',
+}
+
 export interface RunSearchParams {
     query: string[][],
     excludeKeywords: string[],

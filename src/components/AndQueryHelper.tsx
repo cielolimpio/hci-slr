@@ -3,8 +3,6 @@ import { OpenaiAndKeywordsResponse } from "../openai/types";
 import { RunSearchParams } from "../scopus/searchParams";
 import { createSearchParams, useNavigate, useRouteError } from "react-router-dom";
 import sparkleIcon from '../icons/sparkle.svg';
-import Select from 'react-select';
-import { isForInStatement } from "typescript";
 import OpenaiUseCase from "../openai/OpenaiUseCase";
 import runSearch from "../scopus/run-search";
 
@@ -37,7 +35,7 @@ export default function AndQueryHelper({ runSearchParams, handleIncreaseResultsC
     setOpenaiAndKeywordsResponse({ list: [] });
     const getCountsForEachNewQueries = async () => {
       if (showAndQueryHelper) {
-        const response = await OpenaiUseCase.mockGetAndKeywords(runSearchParams.query);
+        const response = await OpenaiUseCase.getAndKeywords(runSearchParams.query);
         if (response === null) {
           alert('Error getting AND keywords');
         } else {

@@ -15,8 +15,8 @@ export default async function runSearch({
   start = 0,
   count = 25,
 }: RunSearchParams): Promise<RunSearchResponse | null> {
-  const keywordQuery = query.map(innerArray => `(${innerArray.join(' OR ')})`).join(' AND ');
-  const excludeQuery = excludeKeywords.map(keyword => ` AND NOT ${keyword}`);
+  const keywordQuery = query.map(innerArray => `(${innerArray.map(word => `"${word}"`).join(' OR ')})`).join(' AND ');
+  const excludeQuery = excludeKeywords.map(keyword => ` AND NOT "${keyword}"`);
   const sourceQuery = source ? ` AND (SRCTYPE(${source}))` : '';
   const dateQuery = `${fromYear ? ` AND PUBYEAR > ${fromYear} ` : ''}${toYear ? `AND PUBYEAR < ${toYear}` : ''}`;
 
@@ -29,11 +29,23 @@ export default async function runSearch({
     count: countForQuery
   };
 
- 
+
   try {
     const response = await axios.get<any>(API_URL, {
       params: queryParams,
     });
+
+    if (response.status === 429) {
+      return await runSearch({
+        query,
+        excludeKeywords,
+        fromYear,
+        toYear,
+        source,
+        start,
+        count,
+      });
+    }
 
     const scopusResponse = ScopusResponse.deserialize(response.data);
 
@@ -60,7 +72,6 @@ export default async function runSearch({
     };
 
   } catch (error) {
-    console.log(error);
     return null;
   }
 }

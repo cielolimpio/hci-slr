@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import {OpenaiOrKeywordsResponse, OrKeyword, WordAndWhy} from "../openai/types";
 import { RunSearchParams } from "../scopus/searchParams";
-import { createSearchParams, useNavigate, useRouteError } from "react-router-dom";
+import { createSearchParams, useNavigate } from "react-router-dom";
 import sparkleIcon from '../icons/sparkle.svg';
 import Select from 'react-select';
 import OpenaiUseCase from '../openai/OpenaiUseCase';
 import runSearch from "../scopus/run-search";
-import { RunSearchResponse } from "../scopus/models";
 
 interface OrQueryHelperProps {
   runSearchParams: RunSearchParams;
@@ -47,7 +46,7 @@ export default function OrQueryHelper({ runSearchParams, handleDecreaseResultsCl
     setOpenaiOrKeywordsResponse({ list: [] });
     const getCountsForEachNewQueries = async () => {
       if (showOrQueryHelper) {
-        const response = await OpenaiUseCase.mockGetOrKeywords(runSearchParams.query);
+        const response = await OpenaiUseCase.getOrKeywords(runSearchParams.query);
         if (response === null) {
           alert('Error getting OR keywords');
         } else {
@@ -70,13 +69,11 @@ export default function OrQueryHelper({ runSearchParams, handleDecreaseResultsCl
               )
             } as OrKeyword;
           };
-
           const newResponse: OpenaiOrKeywordsResponse = {
             list: await Promise.all(
                 response.list.map((orKeyword: OrKeyword) => getCountsById(orKeyword))
             )
           };
-
           setOpenaiOrKeywordsResponse(newResponse);
           setSelectedOption(response.list[0].synonyms[0].word);
           setIsLoading(false);
