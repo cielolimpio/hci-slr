@@ -39,7 +39,6 @@ export default async function runSearch({
 
     //검색 총 개수
     const resultCount = scopusResponse.searchResults?.openSearchTotalResults;
-    console.log(`RESULT COUNT: ${resultCount}`);
 
     //검색 결과
     // @ts-ignore

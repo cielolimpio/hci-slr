@@ -35,7 +35,7 @@ const OpenaiUseCase = {
                 {
                     id: 0,
                     synonyms: [
-                        { word: "exampleWord1", why: "exampleWhy1" },
+                        { word: "mass", why: "exampleWhy1" },
                         { word: "exampleWord2", why: "exampleWhy2" },
                         { word: "exampleWord3", why: "exampleWhy3" },
                     ]
@@ -43,7 +43,7 @@ const OpenaiUseCase = {
                 {
                     id: 1,
                     synonyms: [
-                        { word: "exampleWord4", why: "exampleWhy4" },
+                        { word: "mass", why: "exampleWhy4" },
                         { word: "exampleWord5", why: "exampleWhy5" },
                         { word: "exampleWord6", why: "exampleWhy6" },
                     ]
@@ -67,7 +67,18 @@ const OpenaiUseCase = {
             }
         }
         return null;
-    }
+    },
+
+    mockGetAndKeywords: async (query: string[][]): Promise<OpenaiAndKeywordsResponse | null> => {
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Adding delay
+        return {
+            list: [
+                { word: "density", why: "exampleWhy1" },
+                { word: "exampleWord2", why: "exampleWhy2" },
+                { word: "exampleWord3", why: "exampleWhy3" },
+            ]
+        };
+    },
 }
 
 export default OpenaiUseCase;

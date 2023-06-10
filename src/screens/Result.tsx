@@ -272,19 +272,21 @@ export default function Result() {
             </div>
           </div>
         </div>
-        <div className={`absolute left-4 top-20 w-80 transition-transform duration-500 ${showOrQueryHelper ? 'translate-x-0' : '-translate-x-96'}`}>
+        <div className={`fixed left-[338px] top-20 w-80 transition-transform duration-500 ${showOrQueryHelper ? 'translate-x-0' : '-translate-x-96'}`}>
           <OrQueryHelper
             runSearchParams={runSearchParams} showOrQueryHelper={showOrQueryHelper}
+            resultCount={runSearchResponse.resultCount}
             handleDecreaseResultsClick={handleDecreaseResultsClick} setShowOrQueryHelper={setShowOrQueryHelper}
           />
         </div>
-        <div className={`absolute left-4 top-20 w-80 transition-transform duration-500 ${showAndQueryHelper ? 'translate-x-0' : '-translate-x-96'}`}>
+        <div className={`fixed left-[338px] top-20 w-80 transition-transform duration-500 ${showAndQueryHelper ? 'translate-x-0' : '-translate-x-96'}`}>
           <AndQueryHelper
-            runSearchParams={runSearchParams} openaiAndKeywordsResponse={mockOpenaiAndKeywordsResponse}
+            runSearchParams={runSearchParams} showAndQueryHelper={showAndQueryHelper}
+            resultCount={runSearchResponse.resultCount}
             handleIncreaseResultsClick={handleIncreaseResultsClick} setShowAndQueryHelper={setShowAndQueryHelper}
           />
         </div>
-        <div className={`absolute left-4 top-20 w-80 transition-transform duration-500 ${showQueryHelper ? 'translate-x-0' : '-translate-x-96'}`}>
+        <div className={`fixed left-[338px] top-20 w-80 transition-transform duration-500 ${showQueryHelper ? 'translate-x-0' : '-translate-x-96'}`}>
           <QueryHelper
             setShowQueryHelper={setShowQueryHelper}
             setShowAndQueryHelper={setShowAndQueryHelper}

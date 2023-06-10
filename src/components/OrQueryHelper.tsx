@@ -10,12 +10,13 @@ import { RunSearchResponse } from "../scopus/models";
 
 interface OrQueryHelperProps {
   runSearchParams: RunSearchParams;
+  resultCount: number;
   handleDecreaseResultsClick: () => void;
   showOrQueryHelper: boolean;
   setShowOrQueryHelper: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function OrQueryHelper({ runSearchParams, handleDecreaseResultsClick, showOrQueryHelper, setShowOrQueryHelper }: OrQueryHelperProps) {
+export default function OrQueryHelper({ runSearchParams, handleDecreaseResultsClick, resultCount, showOrQueryHelper, setShowOrQueryHelper }: OrQueryHelperProps) {
   const query = runSearchParams.query;
   const subQueryGroups: string[] = query.map((subQuery, i) => {
     return `Group ${i + 1}: ${subQuery.join(' OR ')}`;
@@ -33,7 +34,6 @@ export default function OrQueryHelper({ runSearchParams, handleDecreaseResultsCl
     list: [],
   });
 
-  const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -43,11 +43,13 @@ export default function OrQueryHelper({ runSearchParams, handleDecreaseResultsCl
   }, [selectedSubQueryGroupIndex]);
 
   useEffect(() => {
+    setIsLoading(true);
+    setOpenaiOrKeywordsResponse({ list: [] });
     const getCountsForEachNewQueries = async () => {
       if (showOrQueryHelper) {
         const response = await OpenaiUseCase.mockGetOrKeywords(runSearchParams.query);
         if (response === null) {
-          setIsError(true);
+          alert('Error getting OR keywords');
         } else {
           const getCountsById = async (orKeyword: OrKeyword): Promise<OrKeyword> => {
             return {
@@ -59,7 +61,7 @@ export default function OrQueryHelper({ runSearchParams, handleDecreaseResultsCl
                     let newRunSearchParams = {...runSearchParams};
                     newRunSearchParams.query = newQuery;
 
-                    const runSearchResponse = await runSearch(newRunSearchParams);
+                    const runSearchResponse = await runSearch({...newRunSearchParams, count: 1});
                     return {
                       ...wordAndWhy,
                       count: runSearchResponse?.resultCount
@@ -82,7 +84,7 @@ export default function OrQueryHelper({ runSearchParams, handleDecreaseResultsCl
       }
     };
     getCountsForEachNewQueries();
-  }, [showOrQueryHelper]);
+  }, [showOrQueryHelper, runSearchParams]);
 
   const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedOption(event.target.value);
@@ -145,7 +147,7 @@ export default function OrQueryHelper({ runSearchParams, handleDecreaseResultsCl
                     />
                     <p className="text-lg">{synonym.word}</p>
                     <div className="flex-grow"></div>
-                    <p className="text-md text-skyblue">+28</p>
+                    <p className="text-md text-skyblue">+{synonym.count! - resultCount }</p>
                   </div>
                   <p className="text-md font-light pl-2 pr-4">
                     {synonym.why}

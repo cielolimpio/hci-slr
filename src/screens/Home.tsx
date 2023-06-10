@@ -58,7 +58,7 @@ export default function Home() {
   return (
     <div className="w-full h-full flex flex-col bg-white">
       <div className='w-full px-8 py-6'>
-        <h1 className='text-4xl text-indigo-600 font-bold'>
+        <h1 className='text-4xl text-blue font-bold'>
           New Scopus
         </h1>
       </div>
