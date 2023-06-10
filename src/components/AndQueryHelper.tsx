@@ -42,7 +42,7 @@ export default function AndQueryHelper({ runSearchParams, handleIncreaseResultsC
           const newResponse: OpenaiAndKeywordsResponse = {
             list: await Promise.all(
               response.list.map(async (wordAndWhy) => {
-                let newQuery = [...query,[wordAndWhy.word]];
+                let newQuery = [...query, [wordAndWhy.word]];
                 let newRunSearchParams = { ...runSearchParams };
                 newRunSearchParams.query = newQuery;
                 const runSearchResponse = await runSearch({ ...newRunSearchParams, count: 1 });
@@ -105,7 +105,7 @@ export default function AndQueryHelper({ runSearchParams, handleIncreaseResultsC
               {openaiAndKeywordsResponse.list.map((words, i) => (
                 <div key={i}>
                   {i !== 0 && <div className="w-full h-[0.5px] my-2.5 bg-gray"></div>}
-                  <div className="w-full flex flex-col gap-2.5 cursor-pointer" onClick={() => { setSelectedOption(words.word); console.log(words.count); }}>
+                  <div className="w-full flex flex-col gap-2.5 cursor-pointer" onClick={() => { setSelectedOption(words.word) }}>
                     <div className="flex flex-row items-center gap-2.5">
                       <input
                         type="radio"

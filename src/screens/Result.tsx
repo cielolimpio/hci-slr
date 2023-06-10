@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import ExcludeSection from "../components/ExcludeSection";
 import FilterSection from "../components/FilterSection";
 import { OpenaiAndKeywordsResponse, OpenaiOrKeywordsResponse } from '../openai/types';
-import runSearch, {MAX_COUNT} from "../scopus/run-search";
+import runSearch, { MAX_COUNT } from "../scopus/run-search";
 import OrQueryHelper from "../components/OrQueryHelper";
 import AndQueryHelper from "../components/AndQueryHelper";
 
@@ -26,7 +26,6 @@ import { run } from "node:test";
 export const loader = async ({ request }: { request: Request }) => {
   const url = new URL(request.url);
   const runSearchParams = JSON.parse(url.searchParams.get("data") as string) as RunSearchParams;
-  console.log(runSearchParams);
   const data = await runSearch(runSearchParams);
   return { runSearchResponse: data, runSearchParams: runSearchParams };
 }
@@ -37,12 +36,11 @@ export default function Result() {
   const runSearchParams = loaderData.runSearchParams as RunSearchParams;
   const navigate = useNavigate();
 
-  const [query, setQuery] = useState<string[][]>(runSearchParams.query);
+  const [query, setQuery] = useState<string[][]>([]);
 
   useEffect(() => {
-    console.log('hi');
     const newQuery = runSearchParams.query.filter((orQuery) => orQuery.length !== 0);
-    setQuery(newQuery);
+    setQuery([...newQuery.map((orQuery) => [...orQuery])]);
     setPapers(runSearchResponse.papers);
   }, [loaderData]);
 
@@ -51,10 +49,10 @@ export default function Result() {
   const [toYear, setToYear] = useState<undefined | string>(runSearchParams.toYear);
   const [source, setSource] = useState<undefined | ScopusSrcType>(runSearchParams.source);
   const [papers, setPapers] = useState<Paper[]>(runSearchResponse.papers);
-  const keywordQuery = query.map(innerArray => `(${innerArray.join(' OR ')})`).join(' AND ');
+  const keywordQuery = runSearchParams.query.map(innerArray => `(${innerArray.join(' OR ')})`).join(' AND ');
   const excludeQuery = excludeKeywords.map(keyword => ` AND NOT ${keyword}`);
 
-  const [showOrQueryHelper, setShowOrQueryHelper] = useState<boolean>(true);
+  const [showOrQueryHelper, setShowOrQueryHelper] = useState<boolean>(false);
   const [showAndQueryHelper, setShowAndQueryHelper] = useState<boolean>(false);
   const [showQueryHelper, setShowQueryHelper] = useState<boolean>(false);
 
@@ -74,7 +72,6 @@ export default function Result() {
   const loadMore = async (count = 25) => {
     if ((papers.length < runSearchResponse.resultCount) && !isLoading) {
       setIsLoading(true);
-      console.log(papers.length);
       const newData = await runSearch({ ...runSearchParams, start: papers.length, count: count });
       if (newData == null) {
         alert('Something went wrong');
@@ -193,7 +190,7 @@ export default function Result() {
         Source: paper.source,
       }
     }));
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;'});
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     saveAs(blob, 'papers.csv');
   };
 
@@ -201,7 +198,6 @@ export default function Result() {
 
   const handleScrollToTop = () => {
     if (mainScrollRef.current) {
-      console.log('hi');
       mainScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
@@ -248,16 +244,16 @@ export default function Result() {
             <div className="flex flex-row p-6 items-start gap-5">
               {
                 isExportLoading
-                    ?
-                    <div className="rounded-lg bg-blue px-2.5 py-2.5 flex flex-row gap-2.5 cursor-not-allowed">
-                      <img src={loadingIcon} alt="loading Icon" />
-                      <p className="text-white ">Export</p>
-                    </div>
-                    :
-                    <div className="rounded-lg bg-blue px-2.5 py-2.5 flex flex-row gap-2.5 cursor-pointer" onClick={handleExportButtonClick}>
-                      <img src={exportIcon} alt="export Icon" />
-                      <p className="text-white ">Export</p>
-                    </div>
+                  ?
+                  <div className="rounded-lg bg-blue px-2.5 py-2.5 flex flex-row gap-2.5 cursor-not-allowed">
+                    <img src={loadingIcon} alt="loading Icon" />
+                    <p className="text-white ">Export</p>
+                  </div>
+                  :
+                  <div className="rounded-lg bg-blue px-2.5 py-2.5 flex flex-row gap-2.5 cursor-pointer" onClick={handleExportButtonClick}>
+                    <img src={exportIcon} alt="export Icon" />
+                    <p className="text-white ">Export</p>
+                  </div>
               }
             </div>
           </div>

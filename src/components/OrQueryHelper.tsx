@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {OpenaiOrKeywordsResponse, OrKeyword, WordAndWhy} from "../openai/types";
+import { OpenaiOrKeywordsResponse, OrKeyword, WordAndWhy } from "../openai/types";
 import { RunSearchParams } from "../scopus/searchParams";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import sparkleIcon from '../icons/sparkle.svg';
@@ -54,24 +54,24 @@ export default function OrQueryHelper({ runSearchParams, handleDecreaseResultsCl
             return {
               id: orKeyword.id,
               synonyms: await Promise.all(
-                  orKeyword.synonyms.map(async (wordAndWhy: WordAndWhy) => {
-                    let newQuery = [...query];
-                    newQuery[orKeyword.id] = [...newQuery[orKeyword.id], wordAndWhy.word];
-                    let newRunSearchParams = {...runSearchParams};
-                    newRunSearchParams.query = newQuery;
+                orKeyword.synonyms.map(async (wordAndWhy: WordAndWhy) => {
+                  let newQuery = [...query];
+                  newQuery[orKeyword.id] = [...newQuery[orKeyword.id], wordAndWhy.word];
+                  let newRunSearchParams = { ...runSearchParams };
+                  newRunSearchParams.query = newQuery;
 
-                    const runSearchResponse = await runSearch({...newRunSearchParams, count: 1});
-                    return {
-                      ...wordAndWhy,
-                      count: runSearchResponse?.resultCount
-                    } as WordAndWhy
-                  })
+                  const runSearchResponse = await runSearch({ ...newRunSearchParams, count: 1 });
+                  return {
+                    ...wordAndWhy,
+                    count: runSearchResponse?.resultCount
+                  } as WordAndWhy
+                })
               )
             } as OrKeyword;
           };
           const newResponse: OpenaiOrKeywordsResponse = {
             list: await Promise.all(
-                response.list.map((orKeyword: OrKeyword) => getCountsById(orKeyword))
+              response.list.map((orKeyword: OrKeyword) => getCountsById(orKeyword))
             )
           };
           setOpenaiOrKeywordsResponse(newResponse);
@@ -144,7 +144,7 @@ export default function OrQueryHelper({ runSearchParams, handleDecreaseResultsCl
                     />
                     <p className="text-lg">{synonym.word}</p>
                     <div className="flex-grow"></div>
-                    <p className="text-md text-skyblue">+{synonym.count! - resultCount }</p>
+                    <p className="text-md text-skyblue">+{synonym.count! - resultCount}</p>
                   </div>
                   <p className="text-md font-light pl-2 pr-4">
                     {synonym.why}
