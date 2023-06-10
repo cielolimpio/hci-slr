@@ -7,13 +7,13 @@ interface IncludeSectoinProps {
   query: string[][];
   setQuery: React.Dispatch<React.SetStateAction<string[][]>>;
   handleQueryHelperClick?: ({ wantIncrease }: { wantIncrease: boolean }) => void;
+  showQueryHelperModal: boolean;
+  setShowQueryHelperModal?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function IncludeSection({ query, setQuery, handleQueryHelperClick }: IncludeSectoinProps) {
+export default function IncludeSection({ query, setQuery, handleQueryHelperClick, showQueryHelperModal, setShowQueryHelperModal }: IncludeSectoinProps) {
 
   const [isAddedCurrently, setIsAddedCurrently] = useState<boolean>(false);
-
-  const [showQueryHelper, setShowQueryHelper] = useState<boolean>(handleQueryHelperClick !== undefined);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, andIndex: number, orIndex: number) => {
     if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
@@ -63,14 +63,14 @@ export default function IncludeSection({ query, setQuery, handleQueryHelperClick
   const handleQHIncreaseButtonClick = () => {
     if (handleQueryHelperClick) {
       handleQueryHelperClick({ wantIncrease: true });
-      setShowQueryHelper(false);
+      setShowQueryHelperModal!(false);
     }
   }
 
   const handleQHDecreaseButtonClick = () => {
     if (handleQueryHelperClick) {
       handleQueryHelperClick({ wantIncrease: false });
-      setShowQueryHelper(false);
+      setShowQueryHelperModal!(false);
     }
   }
 
@@ -86,7 +86,7 @@ export default function IncludeSection({ query, setQuery, handleQueryHelperClick
   }, [isAddedCurrently]);
 
   return (
-    <div className={`w-full h-full flex flex-col items-center relative ${showQueryHelper && 'min-h-[360px]'}`}>
+    <div className={`w-full h-full flex flex-col items-center relative ${showQueryHelperModal && 'min-h-[360px]'}`}>
       <div className='w-full flex flex-col items-center p-2 rounded-2xl bg-lightergray shadow-md'>
         {query.map((group, i) => (
           <div className='w-full flex flex-col items-center' key={i}>
@@ -149,7 +149,7 @@ export default function IncludeSection({ query, setQuery, handleQueryHelperClick
         </div>
         <div className='h-1'></div>
       </div>
-      {showQueryHelper && 
+      {showQueryHelperModal && 
       <div className="absolute -inset-1 bg-blurwhite bg-opacity-50 backdrop-blur-md rounded-2xl flex flex-col">
         <div className="w-full h-full relative">
           <div className="w-full h-full flex flex-col gap-2 items-center justify-center">
@@ -169,7 +169,7 @@ export default function IncludeSection({ query, setQuery, handleQueryHelperClick
               </div>
             </div>
           </div>
-          <div className="absolute p-4 right-0 top-0 cursor-pointer" onClick={()=>{setShowQueryHelper(false)}}>
+          <div className="absolute p-4 right-0 top-0 cursor-pointer" onClick={()=>{setShowQueryHelperModal!(false)}}>
             <img className="h-5" src={deleteIcon} alt="delete Icon" />
           </div>
         </div>

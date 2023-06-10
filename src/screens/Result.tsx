@@ -52,6 +52,7 @@ export default function Result() {
   const keywordQuery = runSearchParams.query.map(innerArray => `(${innerArray.join(' OR ')})`).join(' AND ');
   const excludeQuery = excludeKeywords.map(keyword => ` AND NOT ${keyword}`);
 
+  const [showQueryHelperModal, setShowQueryHelperModal] = useState<boolean>(true);
   const [showOrQueryHelper, setShowOrQueryHelper] = useState<boolean>(false);
   const [showAndQueryHelper, setShowAndQueryHelper] = useState<boolean>(false);
   const [showQueryHelper, setShowQueryHelper] = useState<boolean>(false);
@@ -105,6 +106,7 @@ export default function Result() {
       setShowQueryHelper(false);
     } else {
       setShowQueryHelper(true);
+      setShowQueryHelperModal(false);
     }
   }
 
@@ -216,7 +218,9 @@ export default function Result() {
               />
             </div>
             <div className="w-full">
-              <IncludeSection query={query} setQuery={setQuery} handleQueryHelperClick={handleQueryHelperClick} />
+              <IncludeSection query={query} setQuery={setQuery} handleQueryHelperClick={handleQueryHelperClick}
+                showQueryHelperModal={showQueryHelperModal} setShowQueryHelperModal={setShowQueryHelperModal}
+              />
             </div>
           </div>
           <div className="flex flex-col gap-3">
@@ -235,7 +239,7 @@ export default function Result() {
         </div>
       </div>
       <div className="flex-1 relative px-4 pt-4 pb-12 overflow-y-scroll" ref={mainScrollRef}>
-        <div className="w-full bg-white rounded-2xl flex flex-col">x
+        <div className="w-full bg-white rounded-2xl flex flex-col">
           <div className="w-full flex flex-row justify-between">
             <div className="w-7/12 flex flex-col p-6">
               <h1 className="text-4xl font-bold ">Total: {runSearchResponse.resultCount} results</h1>

@@ -83,7 +83,7 @@ export default function Home() {
             <div className='h-full flex-1 flex flex-col gap-6 items-center'>
               <h3 className='text-center font-semibold text-2xl'>Include</h3>
               <div className='w-72 flex-1'>
-                <IncludeSection query={query} setQuery={setQuery} />
+                <IncludeSection query={query} setQuery={setQuery} showQueryHelperModal={false} />
               </div>
             </div>
           </div>
