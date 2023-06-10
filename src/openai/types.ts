@@ -1,7 +1,7 @@
 export interface OpenaiOrKeywordsResponse {
     list: OrKeyword[]
 }
-interface OrKeyword {
+export interface OrKeyword {
     id: number,
     synonyms: WordAndWhy[]
 }
@@ -10,7 +10,7 @@ export interface OpenaiAndKeywordsResponse {
     list: WordAndWhy[]
 }
 
-interface WordAndWhy {
+export interface WordAndWhy {
     word: string,
     why: string
     count?: number

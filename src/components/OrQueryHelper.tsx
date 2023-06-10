@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { OpenaiOrKeywordsResponse } from "../openai/types";
+import {OpenaiOrKeywordsResponse, OrKeyword, WordAndWhy} from "../openai/types";
 import { RunSearchParams } from "../scopus/searchParams";
 import { createSearchParams, useNavigate, useRouteError } from "react-router-dom";
 import sparkleIcon from '../icons/sparkle.svg';
@@ -43,32 +43,49 @@ export default function OrQueryHelper({ runSearchParams, handleDecreaseResultsCl
   }, [selectedSubQueryGroupIndex]);
 
   useEffect(() => {
-    if (showOrQueryHelper) {
-      OpenaiUseCase.mockGetOrKeywords(runSearchParams.query).then((response) => {
+    const getCountsForEachNewQueries = async () => {
+      if (showOrQueryHelper) {
+        const response = await OpenaiUseCase.mockGetOrKeywords(runSearchParams.query);
         if (response === null) {
           setIsError(true);
         } else {
-          // TODO: response를 map, forEach와 같은 반복문을 통해서 각각의 synonyms에 대해서 count를 추가해야함.
-          // 문제는 Promise가 2중 구조고, 그 안에 있는 Promise를 타입 잘 지켜가면서 어떻게 처리해야할지 모르겠음(그냥 머리아픔)
-          // 결론은 OpenaiOrKeywordsResponse에 count들을 다 채워넣어서 아래의
-          // response 대신에 newResponse를 넣어주면 됨.
-          // 나머지는 다시 내가함.
+          const getCountsById = async (orKeyword: OrKeyword): Promise<OrKeyword> => {
+            return {
+              id: orKeyword.id,
+              synonyms: await Promise.all(
+                  orKeyword.synonyms.map(async (wordAndWhy: WordAndWhy) => {
+                    let newQuery = [...query];
+                    newQuery[orKeyword.id] = [...newQuery[orKeyword.id], wordAndWhy.word];
+                    let newRunSearchParams = {...runSearchParams};
+                    newRunSearchParams.query = newQuery;
 
-          // 아래는 word를 추가하여 runSearch할 때 참고할 코드
-          // const newQuery = [...query];
-          // newQuery[selectedSubQueryGroupIndex] = [...newQuery[selectedSubQueryGroupIndex], word];
-          // const newRunSearchParams = {
-          //   ...runSearchParams,
-          // };
-          // newRunSearchParams.query = newQuery;
-          // runSearch(newQuery);
+                    const runSearchResponse = await runSearch(newRunSearchParams);
+                    return {
+                      ...wordAndWhy,
+                      count: runSearchResponse?.resultCount
+                    } as WordAndWhy
+                  })
+              )
+            } as OrKeyword;
+          };
 
-          setOpenaiOrKeywordsResponse(response);
+          const newResponse: OpenaiOrKeywordsResponse = {
+            list: await Promise.all(
+                response.list.map((orKeyword: OrKeyword) => getCountsById(orKeyword))
+            )
+          };
+          console.log('response');
+          console.log(response);
+          console.log('newResponse');
+          console.log(newResponse);
+
+          setOpenaiOrKeywordsResponse(newResponse);
           setSelectedOption(response.list[0].synonyms[0].word);
           setIsLoading(false);
         }
-      });
-    }
+      }
+    };
+    getCountsForEachNewQueries();
   }, [showOrQueryHelper]);
 
   const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
