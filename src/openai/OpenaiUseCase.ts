@@ -1,5 +1,5 @@
 import OpenaiRepository from "./openaiRepository";
-import {OpenaiAndKeywordsResponse, OpenaiOrKeywordsResponse} from "./types";
+import { OpenaiAndKeywordsResponse, OpenaiOrKeywordsResponse } from "./types";
 
 const MAXIMUM_ITER_COUNT = 3;
 
@@ -28,6 +28,30 @@ const OpenaiUseCase = {
         return null;
     },
 
+    mockGetOrKeywords: async (query: string[][]): Promise<OpenaiOrKeywordsResponse | null> => {
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Adding delay
+        return {
+            list: [
+                {
+                    id: 0,
+                    synonyms: [
+                        { word: "mass", why: "exampleWhy1" },
+                        { word: "exampleWord2", why: "exampleWhy2" },
+                        { word: "exampleWord3", why: "exampleWhy3" },
+                    ]
+                },
+                {
+                    id: 1,
+                    synonyms: [
+                        { word: "mass", why: "exampleWhy4" },
+                        { word: "exampleWord5", why: "exampleWhy5" },
+                        { word: "exampleWord6", why: "exampleWhy6" },
+                    ]
+                }
+            ]
+        };
+    },
+
     getAndKeywords: async (query: string[][]): Promise<OpenaiAndKeywordsResponse | null> => {
         const queryString = queryToString(query);
 
@@ -43,7 +67,18 @@ const OpenaiUseCase = {
             }
         }
         return null;
-    }
+    },
+
+    mockGetAndKeywords: async (query: string[][]): Promise<OpenaiAndKeywordsResponse | null> => {
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Adding delay
+        return {
+            list: [
+                { word: "density", why: "exampleWhy1" },
+                { word: "exampleWord2", why: "exampleWhy2" },
+                { word: "exampleWord3", why: "exampleWhy3" },
+            ]
+        };
+    },
 }
 
 export default OpenaiUseCase;

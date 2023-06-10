@@ -1,4 +1,4 @@
-import {JsonProperty} from "json-typescript-mapper/index";
+import {JsonProperty, ObjectMapper} from "json-object-mapper";
 
 export interface Paper {
     title: string,
@@ -8,37 +8,58 @@ export interface Paper {
     source: string;
 }
 
-export class ScopusResponse {
-    @JsonProperty('search-results')
-    searchResults: SearchResults | undefined;
+export interface RunSearchResponse {
+    resultCount: number;
+    papers: Paper[];
 }
 
-class SearchResults {
-    @JsonProperty('opensearch:totalResults')
-    openSearchTotalResults: number | undefined;
-    @JsonProperty('opensearch:Query')
-    openSearchQuery: OpenSearchQuery | undefined;
-    entry: Entry[] | undefined;
+export interface RunSearchResponse {
+    resultCount: number;
+    papers: Paper[];
 }
 
 class OpenSearchQuery {
-    @JsonProperty('@role')
+    @JsonProperty({name: '@role'})
     role: string | undefined;
-    @JsonProperty('@searchTerms')
+    @JsonProperty({name: '@searchTerms'})
     searchTerms: string | undefined;
-    @JsonProperty('@startPage')
+    @JsonProperty({name: '@startPage'})
     startPage: number | undefined;
 }
 
 class Entry {
-    @JsonProperty('dc:title')
+    @JsonProperty({name: 'dc:title'})
     dcTitle: string | undefined;
-    @JsonProperty('prism:doi')
+    @JsonProperty({name: 'prism:doi'})
     prismDoi: string | undefined;
-    @JsonProperty('dc:creator')
+    @JsonProperty({name: 'dc:creator'})
     dcCreator: string | undefined;
-    @JsonProperty('prism:publicationName')
+    @JsonProperty({name: 'prism:publicationName'})
     prismPublicationName: string | undefined;
-    @JsonProperty('prism:coverDate')
+    @JsonProperty({type: Date, name: 'prism:coverDate'})
     prismCoverDate: Date | undefined;
+}
+
+class SearchResults {
+    @JsonProperty({name: 'entry'})
+    entry: Entry[] | undefined;
+    @JsonProperty({name: 'opensearch:totalResults'})
+    openSearchTotalResults: number | undefined;
+    @JsonProperty({type: OpenSearchQuery, name: 'opensearch:Query'})
+    openSearchQuery: OpenSearchQuery | undefined;
+}
+
+export class ScopusResponse {
+    @JsonProperty({type: SearchResults, name: 'search-results'})
+    searchResults: SearchResults | undefined;
+
+    static deserialize = (data: any): ScopusResponse => {
+        let result = ObjectMapper.deserialize(ScopusResponse, data);
+        if (result.searchResults?.entry) {
+            result.searchResults.entry = result.searchResults.entry.map(entry =>
+                ObjectMapper.deserialize(Entry, entry)
+            );
+        }
+        return result;
+    }
 }
