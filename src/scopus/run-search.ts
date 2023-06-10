@@ -1,11 +1,10 @@
 import axios from 'axios';
 import { RunSearchParams, ScopusSrcType } from './searchParams';
 import { Paper, RunSearchResponse, ScopusResponse } from "./models";
-import { ObjectMapper } from "json-object-mapper";
 
 const API_KEY = process.env.REACT_APP_SCOPUS_API_KEY;
 const API_URL = 'https://api.elsevier.com/content/search/scopus';
-const MAX_COUNT = 25;
+export const MAX_COUNT = 25;
 
 export default async function runSearch({
   query,
@@ -21,18 +20,13 @@ export default async function runSearch({
   const sourceQuery = source ? ` AND (SRCTYPE(${source}))` : '';
   const dateQuery = `${fromYear ? ` AND PUBYEAR > ${fromYear} ` : ''}${toYear ? `AND PUBYEAR < ${toYear}` : ''}`;
 
-  return {
-    resultCount: 0,
-    papers: [],
-  } ;
-
-  count = count > MAX_COUNT ? MAX_COUNT : count;
+  const countForQuery = count > MAX_COUNT ? MAX_COUNT : count;
 
   const queryParams = {
     apiKey: API_KEY,
     query: `TITLE-ABS-KEY(${keywordQuery}${excludeQuery})${sourceQuery}${dateQuery}`,
     start,
-    count
+    count: countForQuery
   };
 
  
@@ -61,10 +55,10 @@ export default async function runSearch({
       return null;
     }
 
-    // return {
-    //   resultCount: resultCount,
-    //   papers,
-    // };
+    return {
+      resultCount: resultCount,
+      papers,
+    };
 
   } catch (error) {
     console.log(error);

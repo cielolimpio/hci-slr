@@ -6,17 +6,21 @@ import { useEffect, useRef, useState } from "react";
 import ExcludeSection from "../components/ExcludeSection";
 import FilterSection from "../components/FilterSection";
 import { OpenaiAndKeywordsResponse, OpenaiOrKeywordsResponse } from '../openai/types';
-import runSearch from "../scopus/run-search";
+import runSearch, {MAX_COUNT} from "../scopus/run-search";
 import OrQueryHelper from "../components/OrQueryHelper";
 import AndQueryHelper from "../components/AndQueryHelper";
 
 import exportIcon from '../icons/export.svg';
+import loadingIcon from '../icons/loading.svg';
 import PaperTable from "../components/PaperTable";
 import scrollTopIcon from '../icons/scrolltop.svg';
 import drawerRightIcon from '../icons/drawerright.svg';
 import drawerLeftIcon from '../icons/drawerleft.svg';
 import { checkExcludeKeywordsHasEmptyString, checkQueryHasEmptyString } from "./Home";
 import QueryHelper from "../components/QueryHelper";
+
+import Papa from "papaparse";
+import { saveAs } from 'file-saver';
 
 export const loader = async ({ request }: { request: Request }) => {
   const url = new URL(request.url);
@@ -55,6 +59,7 @@ export default function Result() {
   // Pagination
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isExportLoading, setIsExportLoading] = useState<boolean>(false);
   const observeTarget = useRef<HTMLDivElement>(null);
 
   const intersectionCallback = (entries: IntersectionObserverEntry[]) => {
@@ -64,11 +69,11 @@ export default function Result() {
     }
   }
 
-  const loadMore = async () => {
+  const loadMore = async (count = 25) => {
     if ((papers.length < runSearchResponse.resultCount) && !isLoading) {
       setIsLoading(true);
       console.log(papers.length);
-      const newData = await runSearch({ ...runSearchParams, start: papers.length });
+      const newData = await runSearch({ ...runSearchParams, start: papers.length, count: count });
       if (newData == null) {
         alert('Something went wrong');
       } else {
@@ -146,11 +151,49 @@ export default function Result() {
     setShowAndQueryHelper(false);
   }
 
-  const handleExportButtonClick = () => {
-    // TODO: papers to csv
-    // if papers.length < runSearchResponse.resultCount fetch more and then export
-    console.log('export');
-  }
+  const handleExportButtonClick = async () => {
+    setIsExportLoading(true);
+    const newPapers = await fetchAllPapers();
+    await exportCsv(newPapers);
+    setIsExportLoading(false);
+  };
+
+  const fetchAllPapers = async () => {
+    let newPapers = papers;
+    if (papers.length < runSearchResponse.resultCount) {
+      const countToRepeatFetching = Math.ceil((runSearchResponse.resultCount - papers.length) / MAX_COUNT);
+      for (const _ of Array(countToRepeatFetching)) {
+        if (!isLoading) {
+          setIsLoading(true);
+          const newData = await runSearch({ ...runSearchParams, start: newPapers.length, count: MAX_COUNT });
+          if (newData == null) {
+            alert('Something went wrong');
+          } else {
+            setPapers(prev => [...prev, ...newData.papers]);
+            newPapers = [...newPapers, ...newData.papers];
+          }
+          setIsLoading(false);
+        }
+      }
+    }
+
+    return newPapers;
+  };
+
+  const exportCsv = async (papers: Paper[]) => {
+    const csv = Papa.unparse(papers.map((paper, index) => {
+      return {
+        Index: index + 1,
+        Doi: paper.doi,
+        Title: paper.title,
+        Author: paper.authorName,
+        Year: paper.publicationYear,
+        Source: paper.source,
+      }
+    }));
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;'});
+    saveAs(blob, 'papers.csv');
+  };
 
   const mainScrollRef = useRef<HTMLDivElement>(null);
 
@@ -201,10 +244,19 @@ export default function Result() {
               <p className="text-xl font-light">{keywordQuery}{excludeQuery}</p>
             </div>
             <div className="flex flex-row p-6 items-start gap-5">
-              <div className="rounded-lg bg-gray px-2.5 py-2.5 flex flex-row gap-2.5 cursor-pointer" onClick={handleExportButtonClick}>
-                <img src={exportIcon} alt="export Icon" />
-                <p className="text-darkgray ">Export</p>
-              </div>
+              {
+                isExportLoading
+                    ?
+                    <div className="rounded-lg bg-blue px-2.5 py-2.5 flex flex-row gap-2.5 cursor-not-allowed">
+                      <img src={loadingIcon} alt="loading Icon" />
+                      <p className="text-white ">Export</p>
+                    </div>
+                    :
+                    <div className="rounded-lg bg-blue px-2.5 py-2.5 flex flex-row gap-2.5 cursor-pointer" onClick={handleExportButtonClick}>
+                      <img src={exportIcon} alt="export Icon" />
+                      <p className="text-white ">Export</p>
+                    </div>
+              }
             </div>
           </div>
           <div className="px-4 pb-2 flex flex-col">

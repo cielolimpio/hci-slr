@@ -74,10 +74,6 @@ export default function OrQueryHelper({ runSearchParams, handleDecreaseResultsCl
                 response.list.map((orKeyword: OrKeyword) => getCountsById(orKeyword))
             )
           };
-          console.log('response');
-          console.log(response);
-          console.log('newResponse');
-          console.log(newResponse);
 
           setOpenaiOrKeywordsResponse(newResponse);
           setSelectedOption(response.list[0].synonyms[0].word);
