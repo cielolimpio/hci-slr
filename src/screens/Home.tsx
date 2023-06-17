@@ -4,7 +4,8 @@ import { ScopusSrcType } from '../scopus/searchParams';
 import FilterSection from '../components/FilterSection';
 import ExcludeSection from '../components/ExcludeSection';
 import IncludeSection from '../components/IncludeSection';
-import { createSearchParams, useNavigate } from 'react-router-dom';
+import { createSearchParams, useNavigate, useNavigation } from 'react-router-dom';
+import loadingIcon from '../icons/loading.svg';
 
 export const checkQueryHasEmptyString = (query: string[][]) => {
   for (let i = 0; i < query.length; i++) {
@@ -31,6 +32,7 @@ export default function Home() {
   const [source, setSource] = useState<undefined | ScopusSrcType>();
 
   const navigate = useNavigate();
+  const searching = useNavigation().location;
 
   const handleRunSearch = async () => {
     console.log(query);
@@ -56,6 +58,13 @@ export default function Home() {
 
   return (
     <div className="w-full h-full flex flex-col bg-white">
+      {
+        searching &&
+        <div className="fixed inset-0 w-full h-full flex flex-row items-center justify-center bg-black bg-opacity-40 z-50 gap-2">
+          <p className="text-white font-bold text-3xl">searching </p>
+          <img className="w-12" src={loadingIcon} alt="loading Icon" />
+        </div>
+      }
       <div className='w-full px-12 py-6 flex flex-row justify-between items-center'>
         <h1 className='text-4xl text-blue font-bold'>
           New Scopus

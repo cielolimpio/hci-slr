@@ -3,6 +3,7 @@ import { Paper, RunSearchResponse } from "../scopus/models";
 import IncludeSection from '../components/IncludeSection';
 import { RunSearchParams, ScopusSrcType } from "../scopus/searchParams";
 import { useEffect, useRef, useState } from "react";
+import { history } from "./history";
 import ExcludeSection from "../components/ExcludeSection";
 import FilterSection from "../components/FilterSection";
 import { OpenaiAndKeywordsResponse, OpenaiOrKeywordsResponse } from '../openai/types';
@@ -21,6 +22,7 @@ import QueryHelper from "../components/QueryHelper";
 
 import Papa from "papaparse";
 import { saveAs } from 'file-saver';
+
 
 export const loader = async ({ request }: { request: Request }) => {
   const url = new URL(request.url);
@@ -43,6 +45,19 @@ export default function Result() {
     setQuery([...newQuery.map((orQuery) => [...orQuery])]);
     setPapers(runSearchResponse.papers);
   }, [loaderData]);
+
+  useEffect(() => {
+    const listenBackEvent = () => {
+
+    };
+    const unlistenHistoryEvent = history.listen(({action})=>{
+      if(action === "POP"){
+        listenBackEvent();
+        history.replace('/');
+      }
+    })
+    return unlistenHistoryEvent;
+  },[]);
 
   const [excludeKeywords, setExcludeKeywords] = useState<string[]>(runSearchParams.excludeKeywords);
   const [fromYear, setFromYear] = useState<undefined | string>(runSearchParams.fromYear);
