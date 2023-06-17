@@ -1,7 +1,7 @@
 import addIcon from '../icons/add.svg';
 import deleteIcon from '../icons/delete.svg';
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export interface ExcludeSectionProps {
   excludeKeywords: string[];
@@ -9,9 +9,22 @@ export interface ExcludeSectionProps {
 }
 
 export default function ExcludeSection({ excludeKeywords, setExcludeKeywords }: ExcludeSectionProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isAddedCurrently, setIsAddedCurrently] = useState<boolean>(false);
+
   const handleAddButtonClick = () => {
     setExcludeKeywords([...excludeKeywords, '']);
+    setIsAddedCurrently(true);
   }
+
+  useEffect(() => {
+    if (inputRef.current && isAddedCurrently) {
+      inputRef.current.focus();
+    }
+    return () => {
+      setIsAddedCurrently(false);
+    }
+  }, [isAddedCurrently]);
 
   const handleDeleteButtonClick = (index: number) => {
     const newExcludeKeywords = [...excludeKeywords];
@@ -46,6 +59,7 @@ export default function ExcludeSection({ excludeKeywords, setExcludeKeywords }: 
                 placeholder="keyword"
                 value={keyword}
                 onChange={(e) => { hanldeUpdateKeyword(e, index) }}
+                ref={inputRef}
               />
               <img
                 className='w-4 cursor-pointer'
