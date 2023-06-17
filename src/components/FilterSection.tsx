@@ -26,7 +26,7 @@ export default function FilterSection({ fromYear, toYear, source, setFromYear, s
   const handleFromYearChange = (option: SingleValue<OptionType>) => {
     const selectedYear = option?.value;
     if (selectedYear && toYear && selectedYear > toYear) {
-      setToYear('None');
+      setToYear('');
     }
     setFromYear(selectedYear);
   };
@@ -34,7 +34,7 @@ export default function FilterSection({ fromYear, toYear, source, setFromYear, s
   const handleToYearChange = (option: SingleValue<OptionType>) => {
     const selectedYear = option?.value;
     if (selectedYear && fromYear && selectedYear < fromYear) {
-      setFromYear('None');
+      setFromYear('');
     }
     setToYear(selectedYear);
   };

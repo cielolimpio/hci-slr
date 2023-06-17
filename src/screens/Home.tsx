@@ -1,5 +1,5 @@
 import dbIcon from '../icons/db.svg';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ScopusSrcType } from '../scopus/searchParams';
 import FilterSection from '../components/FilterSection';
 import ExcludeSection from '../components/ExcludeSection';
@@ -24,12 +24,26 @@ export const checkExcludeKeywordsHasEmptyString = (excludeKeywords: string[]) =>
 }
 
 export default function Home() {
+  const savedQuery = JSON.parse(localStorage.getItem('query') || '[[[""], [""]]]');
+  const savedExcludeKeywords = JSON.parse(localStorage.getItem('excludeKeywords') || '[]');
+  const savedFromYear = localStorage.getItem('fromYear') || undefined;
+  const savedToYear = localStorage.getItem('toYear') || undefined;
+  const savedSource = localStorage.getItem('source') || undefined;
 
-  const [query, setQuery] = useState<string[][]>([['', ''], ['']]);
-  const [excludeKeywords, setExcludeKeywords] = useState<string[]>([]);
-  const [fromYear, setFromYear] = useState<undefined | string>();
-  const [toYear, setToYear] = useState<undefined | string>();
-  const [source, setSource] = useState<undefined | ScopusSrcType>();
+  const [query, setQuery] = useState<string[][]>(savedQuery ?? [['', ''], ['']]);
+  const [excludeKeywords, setExcludeKeywords] = useState<string[]>(savedExcludeKeywords ?? []);
+  const [fromYear, setFromYear] = useState<undefined | string>(savedFromYear);
+  const [toYear, setToYear] = useState<undefined | string>(savedToYear);
+  const [source, setSource] = useState<undefined | ScopusSrcType>(savedSource as ScopusSrcType);
+
+  useEffect(() => {
+    localStorage.setItem('query', JSON.stringify(query));
+    localStorage.setItem('excludeKeywords', JSON.stringify(excludeKeywords));
+    localStorage.setItem('fromYear', fromYear || '');
+    localStorage.setItem('toYear', toYear || '');
+    localStorage.setItem('source', source || '');
+  }, [query, excludeKeywords, fromYear, toYear, source]);
+
 
   const navigate = useNavigate();
   const searching = useNavigation().location;
@@ -38,7 +52,6 @@ export default function Home() {
     console.log(query);
     if (checkQueryHasEmptyString(query)) return alert('Please fill all the keywords');
     if (checkExcludeKeywordsHasEmptyString(excludeKeywords)) return alert('Please fill all the exclude keywords');
-
 
     navigate({
       pathname: '/result',
@@ -56,6 +69,14 @@ export default function Home() {
     });
   }
 
+  const handleClearButtonClick = () => {
+    setQuery([['', ''], ['']]);
+    setExcludeKeywords([]);
+    setFromYear(undefined);
+    setToYear(undefined);
+    setSource(undefined);
+  }
+
   return (
     <div className="w-full h-full flex flex-col bg-white">
       {
@@ -69,8 +90,13 @@ export default function Home() {
         <h1 className='text-4xl text-blue font-bold'>
           New Scopus
         </h1>
-        <div className='bg-blue px-4 py-2.5 rounded-xl cursor-pointer' onClick={handleRunSearch}>
-          <p className='text-white font-bold text-2xl'>RUN SEARCH</p>
+        <div className='flex flex-row gap-4'>
+          <div className='bg-blue px-4 py-2.5 rounded-xl cursor-pointer' onClick={handleClearButtonClick}>
+            <p className='text-white font-bold text-2xl'>RESET FORM</p>
+          </div>
+          <div className='bg-blue px-4 py-2.5 rounded-xl cursor-pointer' onClick={handleRunSearch}>
+            <p className='text-white font-bold text-2xl'>RUN SEARCH</p>
+          </div>
         </div>
       </div>
       <div className='w-full flex-1 px-8 pb-8'>
