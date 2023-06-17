@@ -96,6 +96,7 @@ export default function IncludeSection({ query, setQuery, handleQueryHelperClick
                   <div key={j} className='w-full px-2 py-1.5 rounded-md shadow-md flex flex-row justify-between bg-white'>
                     <input
                       className='w-full text-black outline-none'
+                      placeholder="keyword "
                       type='text' value={item} onChange={(e) => { handleItemEdit(e, i, j) }}
                       onKeyDown={(e) => handleKeyDown(e, i, j)}
                       ref={inputRef}
