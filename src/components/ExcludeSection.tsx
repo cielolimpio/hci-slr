@@ -1,7 +1,7 @@
 import addIcon from '../icons/add.svg';
 import deleteIcon from '../icons/delete.svg';
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export interface ExcludeSectionProps {
   excludeKeywords: string[];
@@ -9,21 +9,22 @@ export interface ExcludeSectionProps {
 }
 
 export default function ExcludeSection({ excludeKeywords, setExcludeKeywords }: ExcludeSectionProps) {
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
-      setExcludeKeywords([...excludeKeywords, e.currentTarget.value]);
-      e.currentTarget.value = '';
-    }
-  }
-
-  const addInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isAddedCurrently, setIsAddedCurrently] = useState<boolean>(false);
 
   const handleAddButtonClick = () => {
-    setExcludeKeywords([...excludeKeywords, addInputRef.current!.value]);
-    addInputRef.current!.value = '';
-    addInputRef.current?.focus();
+    setExcludeKeywords([...excludeKeywords, '']);
+    setIsAddedCurrently(true);
   }
+
+  useEffect(() => {
+    if (inputRef.current && isAddedCurrently) {
+      inputRef.current.focus();
+    }
+    return () => {
+      setIsAddedCurrently(false);
+    }
+  }, [isAddedCurrently]);
 
   const handleDeleteButtonClick = (index: number) => {
     const newExcludeKeywords = [...excludeKeywords];
@@ -40,21 +41,26 @@ export default function ExcludeSection({ excludeKeywords, setExcludeKeywords }: 
   return (
     <div className='w-full h-full flex flex-col items-center'>
       <div className='w-full h-full flex flex-col items-center gap-4'>
-        <div className='w-full rounded-md border-dashed border-[1px] border-darkgray px-2 gap-4 py-1.5 flex flex-row justify-between'>
-          <input
-            className='w-full text-black placeholder:text-darkgray outline-none bg-transparent'
-            type="text" placeholder='add keyword' onKeyDown={handleKeyDown}
-            ref={addInputRef}
-          />
+        <div className='w-full rounded-md border-dashed border-[1px] border-darkgray px-2 gap-4 py-1.5 flex flex-row justify-between cursor-pointer' onClick={handleAddButtonClick}>
+          <p className='w-full text-darkgray whitespace-nowrap text-ellipsis overflow-hidden'>
+            add keyword to click
+          </p>
           <img
-            className='w-4 fill-black caret-black cursor-pointer'
-            src={addIcon} alt="add icon" onClick={handleAddButtonClick}
+            className='w-4 fill-black caret-black'
+            src={addIcon} alt="add icon"
           />
         </div>
         {
           excludeKeywords.map((keyword, index) => (
             <div key={index} className='w-full px-2 py-1.5 rounded-md shadow-md flex flex-row justify-between bg-white'>
-              <input className='w-full text-black outline-none' type='text' value={keyword} onChange={(e) => { hanldeUpdateKeyword(e, index) }} />
+              <input
+                className='w-full text-black outline-none'
+                type='text'
+                placeholder="keyword"
+                value={keyword}
+                onChange={(e) => { hanldeUpdateKeyword(e, index) }}
+                ref={inputRef}
+              />
               <img
                 className='w-4 cursor-pointer'
                 src={deleteIcon} alt="add icon" onClick={() => { handleDeleteButtonClick(index) }} />

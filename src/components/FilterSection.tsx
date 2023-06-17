@@ -15,17 +15,18 @@ interface OptionType {
   label: string;
 }
 
-const years: string[] = Array.from({ length: 64 }, (_, i) => i === 63 ? "Before 1960" : (2023 - i).toString());
-const yearOptions = years.map(year => ({ value: year, label: year }));
+const years: string[] = Array.from({ length: 63 }, (_, i) => (2023 - i).toString());
+const fromYearOptions = [{ value: '', label: "None" }, ...years.map(year => ({ value: year, label: year })), { value: '-1', label: "Before 1960" }];
+const toYearOptions = [{ value: '', label: "None" }, ...years.map(year => ({ value: year, label: year }))];
 const sources = Object.values(ScopusSrcType);
-const sourceOptions = sources.map(source => ({ value: source, label: sourceToLabelMap[source] }));
+const sourceOptions = [{ value: undefined, label: 'All' }, ...sources.map(source => ({ value: source, label: sourceToLabelMap[source] }))];
 
 export default function FilterSection({ fromYear, toYear, source, setFromYear, setToYear, setSource }: FilterSectionProps) {
 
   const handleFromYearChange = (option: SingleValue<OptionType>) => {
     const selectedYear = option?.value;
     if (selectedYear && toYear && selectedYear > toYear) {
-      setToYear('2023');
+      setToYear('');
     }
     setFromYear(selectedYear);
   };
@@ -33,30 +34,30 @@ export default function FilterSection({ fromYear, toYear, source, setFromYear, s
   const handleToYearChange = (option: SingleValue<OptionType>) => {
     const selectedYear = option?.value;
     if (selectedYear && fromYear && selectedYear < fromYear) {
-      setFromYear('Before 1960');
+      setFromYear('');
     }
     setToYear(selectedYear);
   };
 
   return (
     <div className='w-full h-full flex flex-col items-center'>
-      <div className='w-72 flex flex-col gap-4 px-2'>
+      <div className='w-full flex flex-col gap-4 px-2'>
         <div className='w-full flex flex-col gap-2'>
           <h3 className='text-xl'>Publish Date</h3>
           <div className='w-full flex flex-row gap-2 items-center justify-between'>
             <Select className='flex-1'
               placeholder="From"
-              options={yearOptions}
+              options={fromYearOptions}
               styles={{ menuList: base => ({ ...base, maxHeight: 200 }) }}
-              value={yearOptions.find(option => option.value === fromYear)}
+              value={fromYearOptions.find(option => option.value === fromYear)}
               onChange={handleFromYearChange}
             />
             <span>~</span>
             <Select className='flex-1'
               placeholder="To"
-              options={yearOptions}
+              options={toYearOptions}
               styles={{ menuList: base => ({ ...base, maxHeight: 200 }) }}
-              value={yearOptions.find(option => option.value === toYear)}
+              value={toYearOptions.find(option => option.value === toYear)}
               onChange={handleToYearChange}
             />
           </div>
@@ -69,7 +70,7 @@ export default function FilterSection({ fromYear, toYear, source, setFromYear, s
               options={sourceOptions}
               styles={{ menuList: base => ({ ...base, maxHeight: 200 }) }}
               value={sourceOptions.find(option => option.value === source)}
-              onChange={(option) => setSource(option?.value)}
+              onChange={(option) => { setSource(option?.value) }}
             />
           </div>
         </div>

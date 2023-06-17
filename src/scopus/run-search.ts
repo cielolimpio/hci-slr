@@ -18,7 +18,7 @@ export default async function runSearch({
   const keywordQuery = query.map(innerArray => `(${innerArray.map(word => `"${word}"`).join(' OR ')})`).join(' AND ');
   const excludeQuery = excludeKeywords.map(keyword => ` AND NOT "${keyword}"`);
   const sourceQuery = source ? ` AND (SRCTYPE(${source}))` : '';
-  const dateQuery = `${fromYear ? ` AND PUBYEAR > ${fromYear} ` : ''}${toYear ? `AND PUBYEAR < ${toYear}` : ''}`;
+  const dateQuery = `${(fromYear && fromYear !== '-1') ? ` AND PUBYEAR > ${fromYear} ` : ''}${toYear ? `AND PUBYEAR < ${toYear}` : ''}`;
 
   const countForQuery = count > MAX_COUNT ? MAX_COUNT : count;
 

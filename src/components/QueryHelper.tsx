@@ -30,12 +30,12 @@ export default function QueryHelper({ setShowQueryHelper, setShowOrQueryHelper, 
       <div className="w-full flex flex-col gap-2.5">
         <div className="w-full rounded-lg shadow-md py-2 px-3 bg-white cursor-pointer" onClick={handleIncreaseResultsClick}>
           <p className="w-full text-center font-bold font-xl">
-            Increase results
+            Expand results
           </p>
         </div>
         <div className="w-full rounded-lg shadow-md py-2 px-3 bg-white cursor-pointer" onClick={handleDecreaseResultsClick}>
           <p className="w-full text-center font-bold font-xl">
-            Decrease results
+            Refine results
           </p>
         </div>
       </div>
