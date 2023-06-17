@@ -1,4 +1,4 @@
-import { createSearchParams, useLoaderData, useNavigate, useRouteError } from "react-router-dom";
+import { createSearchParams, useLoaderData, useNavigate, useNavigation, useRouteError } from "react-router-dom";
 import { Paper, RunSearchResponse } from "../scopus/models";
 import IncludeSection from '../components/IncludeSection';
 import { RunSearchParams, ScopusSrcType } from "../scopus/searchParams";
@@ -21,7 +21,6 @@ import QueryHelper from "../components/QueryHelper";
 
 import Papa from "papaparse";
 import { saveAs } from 'file-saver';
-import { run } from "node:test";
 
 export const loader = async ({ request }: { request: Request }) => {
   const url = new URL(request.url);
@@ -35,6 +34,7 @@ export default function Result() {
   const runSearchResponse = loaderData.runSearchResponse as RunSearchResponse;
   const runSearchParams = loaderData.runSearchParams as RunSearchParams;
   const navigate = useNavigate();
+  const searching = useNavigation().location;
 
   const [query, setQuery] = useState<string[][]>([]);
 
@@ -206,6 +206,13 @@ export default function Result() {
 
   return (
     <div className="w-full h-full flex flex-row bg-lightgray">
+      {
+        searching &&
+        <div className="fixed inset-0 w-full h-full flex flex-row items-center justify-center bg-black bg-opacity-40 z-50 gap-2">
+          <p className="text-white font-bold text-3xl">searching </p>
+          <img className="w-12" src={loadingIcon} alt="loading Icon" />
+        </div>
+      }
       <div className="w-80 h-full bg-white relative z-10">
         <div className="h-full flex flex-col pt-6 pb-24 px-4 gap-6 overflow-y-scroll">
           <h1 className="text-4xl font-bold text-blue cursor-pointer" onClick={handleLogoClick}>New Scopus</h1>
@@ -274,14 +281,14 @@ export default function Result() {
             </div>
           </div>
         </div>
-        <div className={`fixed left-[338px] top-20 w-80 transition-transform duration-500 ${showOrQueryHelper ? 'translate-x-0' : '-translate-x-96'}`}>
+        <div className={`fixed left-[338px] top-20 w-[450px] transition-transform duration-500 ${showOrQueryHelper ? 'translate-x-0' : 'translate-x-[-600px]'}`}>
           <OrQueryHelper
             runSearchParams={runSearchParams} showOrQueryHelper={showOrQueryHelper}
             resultCount={runSearchResponse.resultCount}
             handleDecreaseResultsClick={handleDecreaseResultsClick} setShowOrQueryHelper={setShowOrQueryHelper}
           />
         </div>
-        <div className={`fixed left-[338px] top-20 w-80 transition-transform duration-500 ${showAndQueryHelper ? 'translate-x-0' : '-translate-x-96'}`}>
+        <div className={`fixed left-[338px] top-20 w-[450px] transition-transform duration-500 ${showAndQueryHelper ? 'translate-x-0' : 'translate-x-[-600px]'}`}>
           <AndQueryHelper
             runSearchParams={runSearchParams} showAndQueryHelper={showAndQueryHelper}
             resultCount={runSearchResponse.resultCount}

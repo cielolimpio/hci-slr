@@ -161,12 +161,12 @@ export default function IncludeSection({ query, setQuery, handleQueryHelperClick
             </div>
             <p className="text-lg font-semibold">Too many/litte results?</p>
             <p className="text-md">Click to get new queries<br />recommended by GPT!</p>
-            <div className="w-full flex flex-col px-6 gap-2.5">
+            <div className="w-full flex flex-col px-6 gap-2.5"> 
               <div className="w-full rounded-lg bg-white py-2 px-3 shadow-md cursor-pointer" onClick={handleQHIncreaseButtonClick}>
-                <p className="text-center text-md font-bold">Increase results</p>
+                <p className="text-center text-md font-bold">Expand results</p>
               </div>
               <div className="w-full rounded-lg bg-white py-2 px-3 shadow-md cursor-pointer" onClick={handleQHDecreaseButtonClick}>
-                <p className="text-center text-md font-bold">Decrease results</p>
+                <p className="text-center text-md font-bold">Refine results</p>
               </div>
             </div>
           </div>
