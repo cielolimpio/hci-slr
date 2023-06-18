@@ -88,15 +88,10 @@ export default function Home() {
       }
       <div className='w-full px-12 py-6 flex flex-row justify-between items-center'>
         <h1 className='text-4xl text-blue font-bold'>
-          New Scopus
+          New Scopu<span onClick={handleClearButtonClick}>s</span>
         </h1>
-        <div className='flex flex-row gap-4'>
-          <div className='bg-blue px-4 py-2.5 rounded-xl cursor-pointer' onClick={handleClearButtonClick}>
-            <p className='text-white font-bold text-2xl'>RESET FORM</p>
-          </div>
-          <div className='bg-blue px-4 py-2.5 rounded-xl cursor-pointer' onClick={handleRunSearch}>
-            <p className='text-white font-bold text-2xl'>RUN SEARCH</p>
-          </div>
+        <div className='bg-blue px-4 py-2.5 rounded-xl cursor-pointer' onClick={handleRunSearch}>
+          <p className='text-white font-bold text-2xl'>RUN SEARCH</p>
         </div>
       </div>
       <div className='w-full flex-1 px-8 pb-8'>

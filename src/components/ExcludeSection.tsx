@@ -43,7 +43,7 @@ export default function ExcludeSection({ excludeKeywords, setExcludeKeywords }: 
       <div className='w-full h-full flex flex-col items-center gap-4'>
         <div className='w-full rounded-md border-dashed border-[1px] border-darkgray px-2 gap-4 py-1.5 flex flex-row justify-between cursor-pointer' onClick={handleAddButtonClick}>
           <p className='w-full text-darkgray whitespace-nowrap text-ellipsis overflow-hidden'>
-            add keyword to click
+            click to add keyword
           </p>
           <img
             className='w-4 fill-black caret-black'

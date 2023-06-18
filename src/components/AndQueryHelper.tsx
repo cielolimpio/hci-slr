@@ -135,7 +135,7 @@ export default function AndQueryHelper({ runSearchParams, handleIncreaseResultsC
         </div>
         <div className="w-full rounded-lg shadow-md py-2 px-3 bg-white cursor-pointer" onClick={handleIncreaseResultsClick}>
           <p className="w-full text-center font-bold font-xl">
-            Increase results
+            Expand results
           </p>
         </div>
       </div>

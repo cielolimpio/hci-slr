@@ -163,7 +163,7 @@ export default function OrQueryHelper({ runSearchParams, handleDecreaseResultsCl
         </div>
         <div className="w-full rounded-lg shadow-md py-2 px-3 bg-white cursor-pointer" onClick={handleDecreaseResultsClick}>
           <p className="w-full text-center font-bold font-xl">
-            Decrease results
+            Refine results
           </p>
 
         </div>
